@@ -102,7 +102,7 @@ namespace MMOngo.Services
             {
                 CharacterId = character.CharacterId,
                 CharacterName = character.CharacterName,
-                PlayerName = character.PlayerName,
+                PlayerName = character.UserName,
                 CurrentLevel = character.CurrentLevel,
                 XP = character.XP,
                 SelectedAllies = new List<string>(character.Allies),
@@ -131,7 +131,7 @@ namespace MMOngo.Services
 
             PlayerCharacter character = BuildCharacterFromForm(form, nextId);
             coll.InsertOne(character);
-            SyncPlayerCharacterNames(character.PlayerName);
+            SyncPlayerCharacterNames(character.UserName);
             SyncGuildMemberships(character);
         }
 
@@ -144,14 +144,14 @@ namespace MMOngo.Services
                 return;
             }
 
-            string oldPlayerName = existingCharacter.PlayerName;
+            string oldPlayerName = existingCharacter.UserName;
             List<string> oldGuilds = new List<string>(existingCharacter.GuildMemberships);
             string oldCharacterName = existingCharacter.CharacterName;
 
             PlayerCharacter updated = BuildCharacterFromForm(form, form.CharacterId);
 
             existingCharacter.CharacterName = updated.CharacterName;
-            existingCharacter.PlayerName = updated.PlayerName;
+            existingCharacter.UserName = updated.UserName;
             existingCharacter.CurrentLevel = updated.CurrentLevel;
             existingCharacter.Allies = updated.Allies;
             existingCharacter.Equipment = updated.Equipment;
@@ -176,7 +176,7 @@ namespace MMOngo.Services
             }
 
             SyncPlayerCharacterNames(oldPlayerName);
-            SyncPlayerCharacterNames(existingCharacter.PlayerName);
+            SyncPlayerCharacterNames(existingCharacter.UserName);
             RemoveCharacterFromGuilds(existingCharacter.CharacterName, oldGuilds.Except(existingCharacter.GuildMemberships));
             SyncGuildMemberships(existingCharacter);
         }
@@ -191,7 +191,7 @@ namespace MMOngo.Services
             }
 
             FakeGameData.Characters.Remove(character);
-            SyncPlayerCharacterNames(character.PlayerName);
+            SyncPlayerCharacterNames(character.UserName);
             RemoveCharacterFromGuilds(character.CharacterName, character.GuildMemberships);
         }
 
@@ -201,7 +201,7 @@ namespace MMOngo.Services
             {
                 CharacterId = characterId,
                 CharacterName = form.CharacterName.Trim(),
-                PlayerName = form.PlayerName,
+                UserName = form.PlayerName,
                 CurrentLevel = form.CurrentLevel,
                 XP = form.XP,
                 Allies = CleanList(form.SelectedAllies),
@@ -273,7 +273,7 @@ namespace MMOngo.Services
             if (player != null)
             {
                 player.Characters = FakeGameData.Characters
-                    .Where(c => c.PlayerName == playerName)
+                    .Where(c => c.UserName == playerName)
                     .Select(c => c.CharacterName)
                     .ToList();
             }

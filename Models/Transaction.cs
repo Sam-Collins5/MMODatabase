@@ -14,7 +14,7 @@ namespace MMOngo.Models
         public int TransactionId { get; set; }
 
         [Required]
-        public string PlayerName { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
 
         [Required]
         public string ItemType { get; set; } = string.Empty;

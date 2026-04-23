@@ -17,7 +17,7 @@ namespace MMOngo.Models
         public string CharacterName { get; set; } = string.Empty;
 
         [Required]
-        public string PlayerName { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
 
         [Range(1, 999)]
         public int CurrentLevel { get; set; }

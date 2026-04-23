@@ -61,11 +61,6 @@ namespace MMOngo.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Player player)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(player);
-            }
-
             _playerService.UpdatePlayer(player);
             return RedirectToAction(nameof(Index));
         }
