@@ -1,0 +1,23 @@
+@model Player
+
+@{
+    ViewData["Title"] = "Delete Player";
+}
+
+<div class="form-shell">
+    <h1>Delete Player</h1>
+    <p class="warning-text">This will also remove the player's characters and transactions from the pseudo data set.</p>
+
+    <div class="card-panel">
+        <p><strong>Player Name:</strong> @Model.PlayerName</p>
+        <p><strong>User Name:</strong> @Model.UserName</p>
+        <p><strong>Age:</strong> @Model.Age</p>
+        <p><strong>Member Since:</strong> @Model.MemberSince</p>
+    </div>
+
+    <form asp-action="Delete" method="post" class="form-actions mt-3">
+        <input type="hidden" name="username" value="@Model.UserName" />
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </form>
+</div>

@@ -1,0 +1,129 @@
+@model ShopViewModel
+
+@{
+    ViewData["Title"] = "Shop";
+}
+
+<h1>Shop</h1>
+
+<hr />
+
+<h2>Weapons</h2>
+@if (Model.Weapons.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Damage</th>
+                <th>Weight</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var weapon in Model.Weapons)
+            {
+                <tr>
+                    <td>@weapon.WeaponName</td>
+                    <td>@weapon.Damage</td>
+                    <td>@weapon.Weight</td>
+                    <td>@weapon.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No weapons available.</p>
+}
+
+<h2>Armor</h2>
+@if (Model.Armors.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Defense</th>
+                <th>Weight</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var armor in Model.Armors)
+            {
+                <tr>
+                    <td>@armor.ArmorName</td>
+                    <td>@armor.Defense</td>
+                    <td>@armor.Weight</td>
+                    <td>@armor.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No armor available.</p>
+}
+
+<h2>Tools</h2>
+@if (Model.Tools.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Weight</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tool in Model.Tools)
+            {
+                <tr>
+                    <td>@tool.ToolName</td>
+                    <td>@tool.Weight</td>
+                    <td>@tool.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No tools available.</p>
+}
+
+<h2>Spells</h2>
+@if (Model.Spells.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Damage</th>
+                <th>Healing</th>
+                <th>MP Cost</th>
+                <th>Gold Cost</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var spell in Model.Spells)
+            {
+                <tr>
+                    <td>@spell.SpellName</td>
+                    <td>@spell.SpellDamage</td>
+                    <td>@spell.SpellHealing</td>
+                    <td>@spell.MpCost</td>
+                    <td>@spell.GoldCost</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No spells available.</p>
+}

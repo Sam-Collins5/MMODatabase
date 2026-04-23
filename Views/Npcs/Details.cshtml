@@ -1,0 +1,77 @@
+@model Npc
+
+@{
+    ViewData["Title"] = "NPC Details";
+}
+
+<h1>NPC Details</h1>
+
+<h2>@Model.NpcName</h2>
+
+<p><strong>XP:</strong> @Model.XP</p>
+
+<hr />
+
+<h3>Locations</h3>
+@if (Model.Locations.Any())
+{
+    <ul>
+        @foreach (var location in Model.Locations)
+        {
+            <li>@location</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No locations listed.</p>
+}
+
+<h3>Wares Sold</h3>
+@if (Model.WaresSold.Any())
+{
+    <ul>
+        @foreach (var item in Model.WaresSold)
+        {
+            <li>@item</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No wares listed.</p>
+}
+
+<h3>Quests</h3>
+@if (Model.Quests.Any())
+{
+    <ul>
+        @foreach (var quest in Model.Quests)
+        {
+            <li>@quest</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No quests listed.</p>
+}
+
+<h3>Known Spells</h3>
+@if (Model.KnownSpells.Any())
+{
+    <ul>
+        @foreach (var spell in Model.KnownSpells)
+        {
+            <li>@spell</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No known spells listed.</p>
+}
+
+<p>
+    <a asp-action="Index">Back to NPCs</a>
+</p>

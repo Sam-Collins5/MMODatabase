@@ -1,0 +1,161 @@
+html {
+  font-size: 14px;
+  min-height: 100%;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #f4f7fb;
+  color: #1f2937;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.app-shell {
+  width: min(1120px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.app-navbar {
+  background: linear-gradient(135deg, #ffffff, #eef4ff);
+  border-bottom: 1px solid #dbe4f0;
+  margin-bottom: 2rem;
+}
+
+.navbar-brand {
+  color: #1f3f77 !important;
+  font-size: 1.35rem;
+}
+
+.nav-link {
+  color: #334155 !important;
+  font-weight: 500;
+  border-radius: 999px;
+  padding-inline: .95rem !important;
+}
+
+.nav-link:hover {
+  background: #e8f0ff;
+  color: #17376f !important;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.page-subtitle {
+  margin: .35rem 0 0;
+  color: #64748b;
+}
+
+.card-panel,
+.form-shell {
+  background: #ffffff;
+  border: 1px solid #dde7f2;
+  border-radius: 18px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+}
+
+.card-panel {
+  padding: 1.15rem 1.25rem;
+}
+
+.form-shell {
+  padding: 1.5rem;
+  max-width: 760px;
+}
+
+.form-shell-wide {
+  max-width: 1120px;
+}
+
+.entity-form .form-control,
+.entity-form .form-select {
+  border-radius: 12px;
+  border-color: #cdd9ea;
+}
+
+.entity-form .form-control:focus,
+.entity-form .form-select:focus {
+  border-color: #6ea8fe;
+  box-shadow: 0 0 0 .2rem rgba(13, 110, 253, .15);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.form-grid .form-select[multiple] {
+  min-height: 10.5rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+
+.helper-text,
+.warning-text {
+  color: #64748b;
+}
+
+.empty-state {
+  background: white;
+  border: 1px dashed #c7d4e5;
+  border-radius: 18px;
+  padding: 2rem;
+  text-align: center;
+  color: #64748b;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  border-bottom-width: 1px;
+  color: #475569;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.btn {
+  border-radius: 999px;
+  padding-inline: 1rem;
+}
+
+.footer {
+  margin-top: 2rem;
+  background: #fff;
+}
+
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+a {
+  color: #0d5bd3;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}

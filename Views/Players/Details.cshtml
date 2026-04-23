@@ -1,0 +1,75 @@
+@model PlayerDetailsViewModel
+
+@{
+    ViewData["Title"] = "Player Details";
+}
+
+<h1>Player Details</h1>
+
+<h2>@Model.Player.UserName</h2>
+
+<div>
+    <p><strong>Real Name:</strong> @Model.Player.PlayerName</p>
+    <p><strong>Age:</strong> @Model.Player.Age</p>
+    <p><strong>Member Since:</strong> @Model.Player.MemberSince</p>
+</div>
+
+<hr />
+
+<h3>Characters</h3>
+@if (Model.CharacterDetails.Any())
+{
+    <ul>
+        @foreach (var character in Model.CharacterDetails)
+        {
+            <li>
+                <a asp-controller="Characters" asp-action="Details" asp-route-id="@character.CharacterId">
+                    @character.CharacterName
+                </a>
+                - Level @character.CurrentLevel
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>This player has no characters.</p>
+}
+
+<hr />
+
+<h3>Transactions</h3>
+@if (Model.Transactions.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Transaction ID</th>
+                <th>Item Type</th>
+                <th>Item ID</th>
+                <th>Total</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var transaction in Model.Transactions)
+            {
+                <tr>
+                    <td>@transaction.TransactionId</td>
+                    <td>@transaction.ItemType</td>
+                    <td>@transaction.ItemId</td>
+                    <td>@transaction.Total</td>
+                    <td>@transaction.TransactionDate</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No transactions found.</p>
+}
+
+<p>
+    <a asp-action="Index">Back to Players</a>
+</p>

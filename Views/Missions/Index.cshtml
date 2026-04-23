@@ -1,0 +1,40 @@
+@model List<Mission>
+
+@{
+    ViewData["Title"] = "Missions";
+}
+
+<h1>Missions</h1>
+
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Mission Name</th>
+                <th>Mission Type</th>
+                <th>Quest Giver</th>
+                <th>Reward</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var mission in Model)
+            {
+                <tr>
+                    <td>@mission.MissionName</td>
+                    <td>@mission.MissionType</td>
+                    <td>@mission.QuestGiver</td>
+                    <td>@mission.Reward</td>
+                    <td>
+                        <a asp-action="Details" asp-route-name="@mission.MissionName">View Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No missions found.</p>
+}

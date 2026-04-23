@@ -1,0 +1,156 @@
+@model CharacterDetailsViewModel
+
+@{
+    ViewData["Title"] = "Character Details";
+}
+<div class="container">
+
+    <h1>Character Details</h1>
+
+    <h2>@Model.Character.CharacterName</h2>
+
+    <div>
+        <p><strong>Character ID:</strong> @Model.Character.CharacterId</p>
+        <p><strong>Player Name:</strong> @Model.Character.PlayerName</p>
+        <p><strong>Current Level:</strong> @Model.Character.CurrentLevel</p>
+        <p><strong>XP:</strong> @Model.Character.XP</p>
+    </div>
+
+    <hr />
+
+    <h3>Allies</h3>
+    @if (Model.Character.Allies.Any())
+    {
+        <ul>
+            @foreach (var ally in Model.Character.Allies)
+            {
+                <li>@ally</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No allies found.</p>
+    }
+
+    <hr />
+
+    <h3>Weapons</h3>
+    @if (Model.Weapons.Any())
+    {
+        <ul>
+            @foreach (var weapon in Model.Weapons)
+            {
+                <li>@weapon.WeaponName - Damage: @weapon.Damage - Price: @weapon.Price</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No weapons equipped.</p>
+    }
+
+    <h3>Armor</h3>
+    @if (Model.Armors.Any())
+    {
+        <ul>
+            @foreach (var armor in Model.Armors)
+            {
+                <li>@armor.ArmorName - Defense: @armor.Defense - Price: @armor.Price</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No armor equipped.</p>
+    }
+
+    <h3>Tools</h3>
+    @if (Model.Tools.Any())
+    {
+        <ul>
+            @foreach (var tool in Model.Tools)
+            {
+                <li>@tool.ToolName - Price: @tool.Price</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No tools equipped.</p>
+    }
+
+    <hr />
+
+    <h3>Known Spells</h3>
+    @if (Model.Spells.Any())
+    {
+        <ul>
+            @foreach (var spell in Model.Spells)
+            {
+                <li>@spell.SpellName - Damage: @spell.SpellDamage - MP Cost: @spell.MpCost</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No spells known.</p>
+    }
+
+    <hr />
+
+    <h3>Current Missions</h3>
+    @if (Model.CurrentMissionDetails.Any())
+    {
+        <ul>
+            @foreach (var mission in Model.CurrentMissionDetails)
+            {
+                <li>@mission.MissionName - Reward: @mission.Reward</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No current missions.</p>
+    }
+
+    <h3>Completed Missions</h3>
+    @if (Model.CompletedMissionDetails.Any())
+    {
+        <ul>
+            @foreach (var mission in Model.CompletedMissionDetails)
+            {
+                <li>@mission.MissionName - Reward: @mission.Reward</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No completed missions.</p>
+    }
+
+    <hr />
+
+    <h3>Guild Memberships</h3>
+    @if (Model.GuildDetails.Any())
+    {
+        <ul>
+            @foreach (var guild in Model.GuildDetails)
+            {
+                <li>
+                    <a asp-controller="Guilds" asp-action="Details" asp-route-name="@guild.GuildName">
+                        @guild.GuildName
+                    </a>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No guild memberships.</p>
+    }
+
+    <p>
+        <a asp-action="Index">Back to Characters</a>
+    </p>
+</div>

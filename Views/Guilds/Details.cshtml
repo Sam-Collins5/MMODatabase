@@ -1,0 +1,58 @@
+@model GuildDetailsViewModel
+
+@{
+    ViewData["Title"] = "Guild Details";
+}
+
+<h1>Guild Details</h1>
+
+<h2>@Model.Guild.GuildName</h2>
+
+<div>
+    <p><strong>Creator:</strong> @Model.Guild.Creator</p>
+    <p><strong>Member Count:</strong> @Model.Guild.MemberCount</p>
+    <p><strong>Creation Date:</strong> @Model.Guild.CreationDate</p>
+</div>
+
+<hr />
+
+<h3>Benefits</h3>
+@if (Model.Guild.Benefits.Any())
+{
+    <ul>
+        @foreach (var benefit in Model.Guild.Benefits)
+        {
+            <li>@benefit</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No benefits listed.</p>
+}
+
+<hr />
+
+<h3>Members</h3>
+@if (Model.Members.Any())
+{
+    <ul>
+        @foreach (var member in Model.Members)
+        {
+            <li>
+                <a asp-controller="Characters" asp-action="Details" asp-route-id="@member.CharacterId">
+                    @member.CharacterName
+                </a>
+                - Level @member.CurrentLevel
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No guild members found.</p>
+}
+
+<p>
+    <a asp-action="Index">Back to Guilds</a>
+</p>

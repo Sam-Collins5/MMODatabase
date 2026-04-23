@@ -1,0 +1,97 @@
+﻿@model HomeIndexViewModel
+
+@{
+    ViewData["Title"] = "Home";
+}
+
+<h1>MMOngo Dashboard</h1>
+
+<p>Welcome to MMOngo. This page shows a quick overview of players, characters, guilds, and missions.</p>
+
+<hr />
+
+<h2>Players</h2>
+@if (Model.Players.Any())
+{
+    <ul>
+        @foreach (var player in Model.Players)
+        {
+            <li>
+                <a asp-controller="Players" asp-action="Details" asp-route-username="@player.UserName">
+                    @player.UserName
+                </a>
+                - @player.PlayerName
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No players found.</p>
+}
+
+<hr />
+
+<h2>Characters</h2>
+@if (Model.Characters.Any())
+{
+    <ul>
+        @foreach (var character in Model.Characters)
+        {
+            <li>
+                <a asp-controller="Characters" asp-action="Details" asp-route-id="@character.CharacterId">
+                    @character.CharacterName
+                </a>
+                - Level @character.CurrentLevel
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No characters found.</p>
+}
+
+<hr />
+
+<h2>Guilds</h2>
+@if (Model.Guilds.Any())
+{
+    <ul>
+        @foreach (var guild in Model.Guilds)
+        {
+            <li>
+                <a asp-controller="Guilds" asp-action="Details" asp-route-name="@guild.GuildName">
+                    @guild.GuildName
+                </a>
+                - Members: @guild.MemberCount
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No guilds found.</p>
+}
+
+<hr />
+
+<h2>Missions</h2>
+@if (Model.Missions.Any())
+{
+    <ul>
+        @foreach (var mission in Model.Missions)
+        {
+            <li>
+                <a asp-controller="Missions" asp-action="Details" asp-route-name="@mission.MissionName">
+                    @mission.MissionName
+                </a>
+                - @mission.MissionType
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No missions found.</p>
+}

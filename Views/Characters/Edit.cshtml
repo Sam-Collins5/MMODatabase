@@ -1,0 +1,88 @@
+@model CharacterFormViewModel
+
+@{
+    ViewData["Title"] = "Edit Character";
+}
+
+<div class="form-shell form-shell-wide">
+    <h1>Edit Character</h1>
+
+    <form asp-action="Edit" method="post" class="entity-form">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input asp-for="CharacterId" type="hidden" />
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="CharacterName" class="form-label"></label>
+                <input asp-for="CharacterName" class="form-control" />
+                <span asp-validation-for="CharacterName" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="PlayerName" class="form-label"></label>
+                <select asp-for="PlayerName" asp-items="Model.PlayerOptions" class="form-select">
+                    <option value="">Select a player</option>
+                </select>
+                <span asp-validation-for="PlayerName" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="CurrentLevel" class="form-label"></label>
+                <input asp-for="CurrentLevel" class="form-control" />
+                <span asp-validation-for="CurrentLevel" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="XP" class="form-label"></label>
+                <input asp-for="XP" class="form-control" />
+                <span asp-validation-for="XP" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-grid mt-4">
+            <div>
+                <label asp-for="SelectedAllies" class="form-label">Allies</label>
+                <select asp-for="SelectedAllies" asp-items="Model.AllyOptions" class="form-select" multiple size="6"></select>
+            </div>
+            <div>
+                <label asp-for="SelectedWeapons" class="form-label">Weapons</label>
+                <select asp-for="SelectedWeapons" asp-items="Model.WeaponOptions" class="form-select" multiple size="6"></select>
+            </div>
+            <div>
+                <label asp-for="SelectedArmor" class="form-label">Armor</label>
+                <select asp-for="SelectedArmor" asp-items="Model.ArmorOptions" class="form-select" multiple size="6"></select>
+            </div>
+            <div>
+                <label asp-for="SelectedTools" class="form-label">Tools</label>
+                <select asp-for="SelectedTools" asp-items="Model.ToolOptions" class="form-select" multiple size="6"></select>
+            </div>
+            <div>
+                <label asp-for="SelectedCurrentMissions" class="form-label">Current Missions</label>
+                <select asp-for="SelectedCurrentMissions" asp-items="Model.CurrentMissionOptions" class="form-select" multiple size="6"></select>
+            </div>
+            <div>
+                <label asp-for="SelectedCompletedMissions" class="form-label">Completed Missions</label>
+                <select asp-for="SelectedCompletedMissions" asp-items="Model.CompletedMissionOptions" class="form-select" multiple size="6"></select>
+            </div>
+            <div>
+                <label asp-for="SelectedKnownSpells" class="form-label">Known Spells</label>
+                <select asp-for="SelectedKnownSpells" asp-items="Model.SpellOptions" class="form-select" multiple size="6"></select>
+            </div>
+            <div>
+                <label asp-for="SelectedGuildMemberships" class="form-label">Guild Memberships</label>
+                <select asp-for="SelectedGuildMemberships" asp-items="Model.GuildOptions" class="form-select" multiple size="6"></select>
+            </div>
+        </div>
+
+        <p class="helper-text mt-3">Hold Ctrl (Windows) or Command (Mac) to select multiple options.</p>
+
+        <div class="form-actions mt-4">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,40 @@
+@model List<Guild>
+
+@{
+    ViewData["Title"] = "Guilds";
+}
+
+<h1>Guilds</h1>
+
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Guild Name</th>
+                <th>Creator</th>
+                <th>Member Count</th>
+                <th>Creation Date</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var guild in Model)
+            {
+                <tr>
+                    <td>@guild.GuildName</td>
+                    <td>@guild.Creator</td>
+                    <td>@guild.MemberCount</td>
+                    <td>@guild.CreationDate</td>
+                    <td>
+                        <a asp-action="Details" asp-route-name="@guild.GuildName">View Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No guilds found.</p>
+}

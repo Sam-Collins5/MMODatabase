@@ -1,0 +1,25 @@
+@model PlayerCharacter
+
+@{
+    ViewData["Title"] = "Delete Character";
+}
+
+<div class="form-shell">
+    <h1>Delete Character</h1>
+    <p class="warning-text">This will also remove the character from their player's roster and any linked guild
+        memberships.</p>
+
+        <div class="card-panel">
+            <p><strong>Character ID:</strong> @Model.CharacterId</p>
+            <p><strong>Character Name:</strong> @Model.CharacterName</p>
+            <p><strong>Player Name:</strong> @Model.PlayerName</p>
+            <p><strong>Current Level:</strong> @Model.CurrentLevel</p>
+            <p><strong>XP:</strong> @Model.XP</p>
+        </div>
+
+        <form asp-action="Delete" method="post" class="form-actions mt-3">
+            <input type="hidden" asp-for="CharacterId" />
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        </form>
+    </div>

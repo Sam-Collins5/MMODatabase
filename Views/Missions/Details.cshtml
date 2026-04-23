@@ -1,0 +1,19 @@
+@model Mission
+
+@{
+    ViewData["Title"] = "Mission Details";
+}
+
+<h1>Mission Details</h1>
+
+<h2>@Model.MissionName</h2>
+
+<div>
+    <p><strong>Mission Type:</strong> @Model.MissionType</p>
+    <p><strong>Quest Giver:</strong> @Model.QuestGiver</p>
+    <p><strong>Reward:</strong> @Model.Reward</p>
+</div>
+
+<p>
+    <a asp-action="Index">Back to Missions</a>
+</p>

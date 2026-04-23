@@ -1,0 +1,36 @@
+@model List<Npc>
+
+@{
+    ViewData["Title"] = "NPCs";
+}
+
+<h1>NPCs</h1>
+
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>NPC Name</th>
+                <th>XP</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var npc in Model)
+            {
+                <tr>
+                    <td>@npc.NpcName</td>
+                    <td>@npc.XP</td>
+                    <td>
+                        <a asp-action="Details" asp-route-name="@npc.NpcName">View Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No NPCs found.</p>
+}

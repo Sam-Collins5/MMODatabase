@@ -1,0 +1,52 @@
+@model List<PlayerCharacter>
+
+@{
+    ViewData["Title"] = "Characters";
+}
+
+<div class="page-header">
+    <div>
+        <h1>Characters</h1>
+        <p class="page-subtitle">Review and manage player characters, their levels, and progression.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">Create New Character</a>
+</div>
+
+@if (Model.Any())
+{
+    <div class="card-panel">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Character ID</th>
+                    <th>Name</th>
+                    <th>Player</th>
+                    <th>Level</th>
+                    <th>XP</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var character in Model)
+                {
+                    <tr>
+                        <td>@character.CharacterId</td>
+                        <td>@character.CharacterName</td>
+                        <td>@character.PlayerName</td>
+                        <td>@character.CurrentLevel</td>
+                        <td>@character.XP</td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@character.CharacterId">Details</a> |
+                            <a asp-action="Edit" asp-route-id="@character.CharacterId">Edit</a> |
+                            <a asp-action="Delete" asp-route-id="@character.CharacterId">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="empty-state">No characters found.</div>
+}

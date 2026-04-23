@@ -1,0 +1,50 @@
+@model List<Player>
+
+@{
+    ViewData["Title"] = "Players";
+}
+
+<div class="page-header">
+    <div>
+        <h1>Players</h1>
+        <p class="page-subtitle">Manage MMOngo player accounts and review who owns which characters.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">Create New Player</a>
+</div>
+
+@if (Model.Any())
+{
+    <div class="card-panel">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Player Name</th>
+                    <th>User Name</th>
+                    <th>Age</th>
+                    <th>Member Since</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var player in Model)
+                {
+                    <tr>
+                        <td>@player.PlayerName</td>
+                        <td>@player.UserName</td>
+                        <td>@player.Age</td>
+                        <td>@player.MemberSince</td>
+                        <td>
+                            <a asp-action="Details" asp-route-username="@player.UserName">Details</a> |
+                            <a asp-action="Edit" asp-route-username="@player.UserName">Edit</a> |
+                            <a asp-action="Delete" asp-route-username="@player.UserName">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="empty-state">No players found.</div>
+}
