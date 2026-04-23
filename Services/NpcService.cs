@@ -16,7 +16,10 @@ namespace MMOngo.Services
 
         public Npc? GetNpcByName(string name)
         {
-            return FakeGameData.Npcs
+            var npcColl = MongoConnection.Database.GetCollection<Npc>("NPCs");
+            var npcFilter = Builders<Npc>.Filter.Empty;
+
+            return npcColl.Find(npcFilter).ToList()
                 .FirstOrDefault(n => n.NpcName == name);
         }
     }
