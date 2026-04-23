@@ -1,5 +1,10 @@
 using MMOngo.Services;
 using MMOngo.Services.Interfaces;
+using MongoDB.Driver;
+using MongoDB.Bson;
+using System.Threading.Tasks;
+
+MongoConnection.Init();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,3 +43,32 @@ app.MapControllerRoute(
 
 
 app.Run();
+
+static class MongoConnection
+{
+    public static async Task Init()
+    {
+        // Connect to database
+        StreamReader sr = new StreamReader("mongo_connection_string.txt");
+        string connectionString = sr.ReadLine();
+        sr.Close();
+
+        GlobalMongoClient = new MongoClient(connectionString);
+
+        var cursor = GlobalMongoClient.ListDatabaseNames();
+        int i = 0;
+        await foreach (var db in cursor.ToAsyncEnumerable())
+        {
+            if (i == 1)
+            {
+                Database = GlobalMongoClient.GetDatabase(db);
+            }
+            i++;
+        }
+        
+        //Database.CreateCollection("test_collection");
+    }
+
+    public static MongoClient GlobalMongoClient;
+    public static IMongoDatabase Database;
+}
