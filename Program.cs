@@ -59,14 +59,20 @@ static class MongoConnection
         int i = 0;
         await foreach (var db in cursor.ToAsyncEnumerable())
         {
-            if (i == 1)
+            if (i == 0)
             {
                 Database = GlobalMongoClient.GetDatabase(db);
+                i++;
             }
-            i++;
         }
-        
-        //Database.CreateCollection("test_collection");
+
+        await Database.CreateCollectionAsync("Players");
+        await Database.CreateCollectionAsync("Characters");
+        await Database.CreateCollectionAsync("Guilds");
+        await Database.CreateCollectionAsync("Missions");
+        await Database.CreateCollectionAsync("NPCs");
+        await Database.CreateCollectionAsync("Shops");
+        await Database.CreateCollectionAsync("Home");
     }
 
     public static MongoClient GlobalMongoClient;
