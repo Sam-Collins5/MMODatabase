@@ -10,7 +10,7 @@ namespace MMOngo.Services
     {
         public List<Player> GetAllPlayers()
         {
-            var coll = MongoConnection.Database.GetCollection<Player>("Player");
+            var coll = MongoConnection.Database.GetCollection<Player>("Players");
             
             var filter = Builders<Player>.Filter.Empty;
             return coll.Find(filter).ToList();
@@ -18,8 +18,10 @@ namespace MMOngo.Services
 
         public Player? GetPlayerByUserName(string username)
         {
-            return FakeGameData.Players
-                .FirstOrDefault(p => p.UserName == username);
+            var coll = MongoConnection.Database.GetCollection<Player>("Players");
+
+            var filter = Builders<Player>.Filter.Empty;
+            return coll.Find(filter).ToList().FirstOrDefault(p => p.UserName == username);
         }
 
         public PlayerDetailsViewModel? GetPlayerDetails(string username)
@@ -45,8 +47,9 @@ namespace MMOngo.Services
 
         public void AddPlayer(Player player)
         {
+            var coll = MongoConnection.Database.GetCollection<Player>("Players");
             player.Characters ??= new List<string>();
-            FakeGameData.Players.Add(player);
+            coll.InsertOne(player);
         }
 
         public void UpdatePlayer(Player player)
@@ -66,18 +69,29 @@ namespace MMOngo.Services
             existingPlayer.MemberSince = player.MemberSince;
             existingPlayer.Characters = player.Characters ?? new List<string>();
 
-            if (!string.Equals(oldPlayerName, player.PlayerName, StringComparison.Ordinal))
-            {
-                foreach (var character in FakeGameData.Characters.Where(c => c.PlayerName == oldPlayerName))
-                {
-                    character.PlayerName = player.PlayerName;
-                }
+            var coll = MongoConnection.Database.GetCollection<Player>("Players");
+            var filter = Builders<Player>.Filter.Eq("PlayerName", oldPlayerName);
+            var combinedUpdate = Builders<Player>.Update.Combine(
+                Builders<Player>.Update.Set("Age", player.Age),
+                Builders<Player>.Update.Set("PasswordHash", player.PasswordHash),
+                Builders<Player>.Update.Set("MemberSince", player.MemberSince),
+                Builders<Player>.Update.Set("Characters", player.Characters)
+            );
 
-                foreach (var transaction in FakeGameData.Transactions.Where(t => t.PlayerName == oldPlayerName))
-                {
-                    transaction.PlayerName = player.PlayerName;
-                }
-            }
+
+
+            //if (!string.Equals(oldPlayerName, player.PlayerName, StringComparison.Ordinal))
+            //{
+            //    foreach (var character in FakeGameData.Characters.Where(c => c.PlayerName == oldPlayerName))
+            //    {
+            //        character.PlayerName = player.PlayerName;
+            //    }
+
+            //    foreach (var transaction in FakeGameData.Transactions.Where(t => t.PlayerName == oldPlayerName))
+            //    {
+            //        transaction.PlayerName = player.PlayerName;
+            //    }
+            //}
         }
 
         public void DeletePlayer(string username)

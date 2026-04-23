@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using MMOngo.Models;
 using MMOngo.Services.Interfaces;
 using MMOngo.ViewModels;
+using MongoDB.Driver;
 
 namespace MMOngo.Services
 {
@@ -9,13 +10,17 @@ namespace MMOngo.Services
     {
         public List<PlayerCharacter> GetAllCharacters()
         {
-            return FakeGameData.Characters;
+            var coll = MongoConnection.Database.GetCollection<PlayerCharacter>("PlayerCharacters");
+            var filter = Builders<PlayerCharacter>.Filter.Empty;
+            return coll.Find(filter).ToList();
         }
 
         public PlayerCharacter? GetCharacterById(int id)
         {
-            return FakeGameData.Characters
-                .FirstOrDefault(c => c.CharacterId == id);
+            var coll = MongoConnection.Database.GetCollection<PlayerCharacter>("PlayerCharacters");
+
+            var filter = Builders<PlayerCharacter>.Filter.Empty;
+            return coll.Find(filter).ToList().FirstOrDefault(p => p.CharacterId == id);
         }
 
         public CharacterDetailsViewModel? GetCharacterDetails(int id)
@@ -27,28 +32,46 @@ namespace MMOngo.Services
                 return null;
             }
 
+            var weaponColl = MongoConnection.Database.GetCollection<Weapon>("Weapons");
+            var weaponFilter = Builders<Weapon>.Filter.Empty;
+
+            var armorColl = MongoConnection.Database.GetCollection<Armor>("Armors");
+            var armorFilter = Builders<Armor>.Filter.Empty;
+
+            var toolColl = MongoConnection.Database.GetCollection<ToolItem>("Tools");
+            var toolFilter = Builders<ToolItem>.Filter.Empty;
+
+            var spellColl = MongoConnection.Database.GetCollection<Spell>("Spells");
+            var spellFilter = Builders<Spell>.Filter.Empty;
+
+            var missionColl = MongoConnection.Database.GetCollection<Mission>("Missions");
+            var missionFilter = Builders<Mission>.Filter.Empty;
+
+            var guildColl = MongoConnection.Database.GetCollection<Guild>("Guilds");
+            var guildFilter = Builders<Guild>.Filter.Empty;
+
             return new CharacterDetailsViewModel
             {
                 Character = character,
-                Weapons = FakeGameData.Weapons
+                Weapons = weaponColl.Find(weaponFilter).ToList()
                     .Where(w => character.Equipment.Weapons.Contains(w.WeaponName))
                     .ToList(),
-                Armors = FakeGameData.Armors
+                Armors = armorColl.Find(armorFilter).ToList()
                     .Where(a => character.Equipment.Armor.Contains(a.ArmorName))
                     .ToList(),
-                Tools = FakeGameData.Tools
+                Tools = toolColl.Find(toolFilter).ToList()
                     .Where(t => character.Equipment.Tools.Contains(t.ToolName))
                     .ToList(),
-                Spells = FakeGameData.Spells
+                Spells = spellColl.Find(spellFilter).ToList()
                     .Where(s => character.KnownSpells.Contains(s.SpellName))
                     .ToList(),
-                CurrentMissionDetails = FakeGameData.Missions
+                CurrentMissionDetails = missionColl.Find(missionFilter).ToList()
                     .Where(m => character.CurrentMissions.Contains(m.MissionName))
                     .ToList(),
-                CompletedMissionDetails = FakeGameData.Missions
+                CompletedMissionDetails = missionColl.Find(missionFilter).ToList()
                     .Where(m => character.CompletedMissions.Contains(m.MissionName))
                     .ToList(),
-                GuildDetails = FakeGameData.Guilds
+                GuildDetails = guildColl.Find(guildFilter).ToList()
                     .Where(g => character.GuildMemberships.Contains(g.GuildName))
                     .ToList()
             };
@@ -98,12 +121,16 @@ namespace MMOngo.Services
 
         public void AddCharacter(CharacterFormViewModel form)
         {
-            int nextId = FakeGameData.Characters.Any()
-                ? FakeGameData.Characters.Max(c => c.CharacterId) + 1
+            var coll = MongoConnection.Database.GetCollection<PlayerCharacter>("PlayerCharacters");
+            var filter = Builders<PlayerCharacter>.Filter.Empty;
+            var characters = coll.Find(filter).ToList();
+
+            int nextId = characters.Any()
+                ? characters.Max(c => c.CharacterId) + 1
                 : 1;
 
             PlayerCharacter character = BuildCharacterFromForm(form, nextId);
-            FakeGameData.Characters.Add(character);
+            coll.InsertOne(character);
             SyncPlayerCharacterNames(character.PlayerName);
             SyncGuildMemberships(character);
         }

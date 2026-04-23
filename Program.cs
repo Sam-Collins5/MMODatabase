@@ -71,12 +71,16 @@ static class MongoConnection
         }
 
         await Database.CreateCollectionAsync("Players");
-        await Database.CreateCollectionAsync("Characters");
+        await Database.CreateCollectionAsync("PlayerCharacters");
         await Database.CreateCollectionAsync("Guilds");
         await Database.CreateCollectionAsync("Missions");
         await Database.CreateCollectionAsync("NPCs");
         await Database.CreateCollectionAsync("Shops");
         await Database.CreateCollectionAsync("Home");
+        await Database.CreateCollectionAsync("Weapons");
+        await Database.CreateCollectionAsync("Armors");
+        await Database.CreateCollectionAsync("Tools");
+        await Database.CreateCollectionAsync("Spells");
     }
 
     public static MongoClient GlobalMongoClient;

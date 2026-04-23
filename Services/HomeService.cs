@@ -10,8 +10,8 @@ namespace MMOngo.Services
         {
             return new HomeIndexViewModel
             {
-                Players = FakeGameData.Players,
-                Characters = FakeGameData.Characters,
+                Players = new PlayerService().GetAllPlayers(),
+                Characters = new CharacterService().GetAllCharacters(),
                 Guilds = FakeGameData.Guilds,
                 Missions = FakeGameData.Missions
             };

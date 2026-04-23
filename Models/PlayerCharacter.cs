@@ -1,9 +1,16 @@
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace MMOngo.Models
 {
     public class PlayerCharacter
     {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        [Required]
+        public string Id { get; set; }
+
         public int CharacterId { get; set; }
 
         [Required]
