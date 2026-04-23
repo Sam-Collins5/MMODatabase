@@ -37,10 +37,10 @@ namespace MMOngo.Services
             {
                 Player = player,
                 CharacterDetails = FakeGameData.Characters
-                    .Where(c => c.PlayerName == player.PlayerName)
+                    .Where(c => c.UserName == player.PlayerName)
                     .ToList(),
                 Transactions = FakeGameData.Transactions
-                    .Where(t => t.PlayerName == player.PlayerName)
+                    .Where(t => t.UserName == player.PlayerName)
                     .ToList()
             };
         }
@@ -103,8 +103,8 @@ namespace MMOngo.Services
                 return;
             }
 
-            FakeGameData.Characters.RemoveAll(c => c.PlayerName == player.PlayerName);
-            FakeGameData.Transactions.RemoveAll(t => t.PlayerName == player.PlayerName);
+            FakeGameData.Characters.RemoveAll(c => c.UserName == player.PlayerName);
+            FakeGameData.Transactions.RemoveAll(t => t.UserName == player.PlayerName);
             FakeGameData.Players.Remove(player);
         }
     }

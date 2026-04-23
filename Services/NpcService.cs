@@ -1,5 +1,6 @@
 using MMOngo.Models;
 using MMOngo.Services.Interfaces;
+using MongoDB.Driver;
 
 namespace MMOngo.Services
 {
@@ -7,7 +8,10 @@ namespace MMOngo.Services
     {
         public List<Npc> GetAllNpcs()
         {
-            return FakeGameData.Npcs;
+            var npcColl = MongoConnection.Database.GetCollection<Npc>("NPCs");
+            var npcFilter = Builders<Npc>.Filter.Empty;
+
+            return npcColl.Find(npcFilter).ToList();
         }
 
         public Npc? GetNpcByName(string name)
