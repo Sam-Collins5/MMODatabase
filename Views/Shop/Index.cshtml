@@ -4,34 +4,51 @@
     ViewData["Title"] = "Shop";
 }
 
-<h1>Shop</h1>
+<div class="page-header">
+    <div>
+        <h1>Shop</h1>
+        <p class="page-subtitle">Manage weapons, armor, tools, and spells.</p>
+    </div>
+</div>
 
-<hr />
+<div class="shop-toolbar">
+    <a asp-action="Create" asp-route-category="weapon" class="btn btn-success">Add Weapon</a>
+    <a asp-action="Create" asp-route-category="armor" class="btn btn-success">Add Armor</a>
+    <a asp-action="Create" asp-route-category="tool" class="btn btn-success">Add Tool</a>
+    <a asp-action="Create" asp-route-category="spell" class="btn btn-success">Add Spell</a>
+</div>
 
 <h2>Weapons</h2>
 @if (Model.Weapons.Any())
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Damage</th>
-                <th>Weight</th>
-                <th>Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var weapon in Model.Weapons)
-            {
+    <div class="card-panel mb-4">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@weapon.WeaponName</td>
-                    <td>@weapon.Damage</td>
-                    <td>@weapon.Weight</td>
-                    <td>@weapon.Price</td>
+                    <th>Name</th>
+                    <th>Damage</th>
+                    <th>Weight</th>
+                    <th>Price</th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var weapon in Model.Weapons)
+                {
+                    <tr>
+                        <td>@weapon.WeaponName</td>
+                        <td>@weapon.Damage</td>
+                        <td>@weapon.Weight</td>
+                        <td>@weapon.Price</td>
+                        <td class="table-actions">
+                            <a asp-action="Edit" asp-route-category="weapon" asp-route-id="@weapon.WeaponId">Edit</a>
+                            <a asp-action="Delete" asp-route-category="weapon" asp-route-id="@weapon.WeaponId">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 else
 {
@@ -41,27 +58,34 @@ else
 <h2>Armor</h2>
 @if (Model.Armors.Any())
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Defense</th>
-                <th>Weight</th>
-                <th>Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var armor in Model.Armors)
-            {
+    <div class="card-panel mb-4">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@armor.ArmorName</td>
-                    <td>@armor.Defense</td>
-                    <td>@armor.Weight</td>
-                    <td>@armor.Price</td>
+                    <th>Name</th>
+                    <th>Defense</th>
+                    <th>Weight</th>
+                    <th>Price</th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var armor in Model.Armors)
+                {
+                    <tr>
+                        <td>@armor.ArmorName</td>
+                        <td>@armor.Defense</td>
+                        <td>@armor.Weight</td>
+                        <td>@armor.Price</td>
+                        <td class="table-actions">
+                            <a asp-action="Edit" asp-route-category="armor" asp-route-id="@armor.ArmorId">Edit</a>
+                            <a asp-action="Delete" asp-route-category="armor" asp-route-id="@armor.ArmorId">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 else
 {
@@ -71,25 +95,32 @@ else
 <h2>Tools</h2>
 @if (Model.Tools.Any())
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Weight</th>
-                <th>Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var tool in Model.Tools)
-            {
+    <div class="card-panel mb-4">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@tool.ToolName</td>
-                    <td>@tool.Weight</td>
-                    <td>@tool.Price</td>
+                    <th>Name</th>
+                    <th>Weight</th>
+                    <th>Price</th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var tool in Model.Tools)
+                {
+                    <tr>
+                        <td>@tool.ToolName</td>
+                        <td>@tool.Weight</td>
+                        <td>@tool.Price</td>
+                        <td class="table-actions">
+                            <a asp-action="Edit" asp-route-category="tool" asp-route-id="@tool.ToolId">Edit</a>
+                            <a asp-action="Delete" asp-route-category="tool" asp-route-id="@tool.ToolId">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 else
 {
@@ -99,29 +130,36 @@ else
 <h2>Spells</h2>
 @if (Model.Spells.Any())
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Damage</th>
-                <th>Healing</th>
-                <th>MP Cost</th>
-                <th>Gold Cost</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var spell in Model.Spells)
-            {
+    <div class="card-panel">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@spell.SpellName</td>
-                    <td>@spell.SpellDamage</td>
-                    <td>@spell.SpellHealing</td>
-                    <td>@spell.MpCost</td>
-                    <td>@spell.GoldCost</td>
+                    <th>Name</th>
+                    <th>Damage</th>
+                    <th>Healing</th>
+                    <th>MP Cost</th>
+                    <th>Gold Cost</th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var spell in Model.Spells)
+                {
+                    <tr>
+                        <td>@spell.SpellName</td>
+                        <td>@spell.SpellDamage</td>
+                        <td>@spell.SpellHealing</td>
+                        <td>@spell.MpCost</td>
+                        <td>@spell.GoldCost</td>
+                        <td class="table-actions">
+                            <a asp-action="Edit" asp-route-category="spell" asp-route-id="@spell.SpellId">Edit</a>
+                            <a asp-action="Delete" asp-route-category="spell" asp-route-id="@spell.SpellId">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 else
 {

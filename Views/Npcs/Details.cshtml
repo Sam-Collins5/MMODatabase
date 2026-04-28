@@ -4,74 +4,89 @@
     ViewData["Title"] = "NPC Details";
 }
 
-<h1>NPC Details</h1>
+<div class="page-header">
+    <div>
+        <h1>NPC Details</h1>
+        <p class="page-subtitle">@Model.NpcName</p>
+    </div>
+    <div class="form-actions">
+        <a asp-action="Edit" asp-route-name="@Model.NpcName" class="btn btn-primary">Edit</a>
+        <a asp-action="Delete" asp-route-name="@Model.NpcName" class="btn btn-outline-danger">Delete</a>
+    </div>
+</div>
 
-<h2>@Model.NpcName</h2>
+<div class="card-panel mb-4">
+    <p><strong>XP:</strong> @Model.XP</p>
+</div>
 
-<p><strong>XP:</strong> @Model.XP</p>
+<div class="card-panel mb-4">
+    <h3>Locations</h3>
+    @if (Model.Locations.Any())
+    {
+        <ul>
+            @foreach (var location in Model.Locations)
+            {
+                <li>@location</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No locations listed.</p>
+    }
+</div>
 
-<hr />
+<div class="card-panel mb-4">
+    <h3>Wares Sold</h3>
+    @if (Model.WaresSold.Any())
+    {
+        <ul>
+            @foreach (var item in Model.WaresSold)
+            {
+                <li>@item</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No wares listed.</p>
+    }
+</div>
 
-<h3>Locations</h3>
-@if (Model.Locations.Any())
-{
-    <ul>
-        @foreach (var location in Model.Locations)
-        {
-            <li>@location</li>
-        }
-    </ul>
-}
-else
-{
-    <p>No locations listed.</p>
-}
+<div class="card-panel mb-4">
+    <h3>Quests</h3>
+    @if (Model.Quests.Any())
+    {
+        <ul>
+            @foreach (var quest in Model.Quests)
+            {
+                <li>@quest</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No quests listed.</p>
+    }
+</div>
 
-<h3>Wares Sold</h3>
-@if (Model.WaresSold.Any())
-{
-    <ul>
-        @foreach (var item in Model.WaresSold)
-        {
-            <li>@item</li>
-        }
-    </ul>
-}
-else
-{
-    <p>No wares listed.</p>
-}
+<div class="card-panel">
+    <h3>Known Spells</h3>
+    @if (Model.KnownSpells.Any())
+    {
+        <ul>
+            @foreach (var spell in Model.KnownSpells)
+            {
+                <li>@spell</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No known spells listed.</p>
+    }
+</div>
 
-<h3>Quests</h3>
-@if (Model.Quests.Any())
-{
-    <ul>
-        @foreach (var quest in Model.Quests)
-        {
-            <li>@quest</li>
-        }
-    </ul>
-}
-else
-{
-    <p>No quests listed.</p>
-}
-
-<h3>Known Spells</h3>
-@if (Model.KnownSpells.Any())
-{
-    <ul>
-        @foreach (var spell in Model.KnownSpells)
-        {
-            <li>@spell</li>
-        }
-    </ul>
-}
-else
-{
-    <p>No known spells listed.</p>
-}
-
-<p>
+<p class="mt-3">
     <a asp-action="Index">Back to NPCs</a>
 </p>

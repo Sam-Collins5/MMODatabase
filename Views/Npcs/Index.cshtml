@@ -4,33 +4,43 @@
     ViewData["Title"] = "NPCs";
 }
 
-<h1>NPCs</h1>
+<div class="page-header">
+    <div>
+        <h1>NPCs</h1>
+        <p class="page-subtitle">Manage NPCs, inventories, and quest assignments.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-success">Create NPC</a>
+</div>
 
 @if (Model.Any())
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>NPC Name</th>
-                <th>XP</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var npc in Model)
-            {
+    <div class="card-panel">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@npc.NpcName</td>
-                    <td>@npc.XP</td>
-                    <td>
-                        <a asp-action="Details" asp-route-name="@npc.NpcName">View Details</a>
-                    </td>
+                    <th>NPC Name</th>
+                    <th>XP</th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var npc in Model)
+                {
+                    <tr>
+                        <td>@npc.NpcName</td>
+                        <td>@npc.XP</td>
+                        <td class="table-actions">
+                            <a asp-action="Details" asp-route-name="@npc.NpcName">Details</a>
+                            <a asp-action="Edit" asp-route-name="@npc.NpcName">Edit</a>
+                            <a asp-action="Delete" asp-route-name="@npc.NpcName">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 else
 {
-    <p>No NPCs found.</p>
+    <div class="empty-state">No NPCs found.</div>
 }

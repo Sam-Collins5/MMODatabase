@@ -1,0 +1,22 @@
+@model Npc
+
+@{
+    ViewData["Title"] = "Delete NPC";
+}
+
+<div class="form-shell">
+    <h1>Delete NPC</h1>
+    <p class="warning-text">This removes the NPC and clears them as quest giver on linked missions.</p>
+
+    <div class="card-panel">
+        <p><strong>NPC Name:</strong> @Model.NpcName</p>
+        <p><strong>XP:</strong> @Model.XP</p>
+        <p><strong>Locations:</strong> @(Model.Locations.Any() ? string.Join(", ", Model.Locations) : "None")</p>
+    </div>
+
+    <form asp-action="Delete" method="post" class="form-actions mt-3">
+        <input type="hidden" name="name" value="@Model.NpcName" />
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </form>
+</div>
