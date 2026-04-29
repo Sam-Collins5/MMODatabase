@@ -1,0 +1,49 @@
+@model MMOngo.ViewModels.GuildFormViewModel
+
+@{
+    ViewData["Title"] = "Create Guild";
+}
+
+<div class="form-shell">
+    <h1>Create Guild</h1>
+
+    <form asp-action="Create" method="post" class="entity-form">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="GuildName" class="form-label"></label>
+            <input asp-for="GuildName" class="form-control" />
+            <span asp-validation-for="GuildName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Creator" class="form-label"></label>
+            <input asp-for="Creator" class="form-control" />
+            <span asp-validation-for="Creator" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="CreationDate" class="form-label"></label>
+            <input asp-for="CreationDate" class="form-control" placeholder="MM-DD-YYYY" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="BenefitsText" class="form-label"></label>
+            <input asp-for="BenefitsText" class="form-control" placeholder="Comma separated" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="SelectedMembers" class="form-label"></label>
+            <select asp-for="SelectedMembers" asp-items="Model.MemberOptions" class="form-select" multiple></select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">Create</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

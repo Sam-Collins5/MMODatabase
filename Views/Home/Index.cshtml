@@ -4,94 +4,103 @@
     ViewData["Title"] = "Home";
 }
 
-<h1>MMOngo Dashboard</h1>
+<div class="dashboard-hero">
+    <h1>MMOngo Dashboard</h1>
+    <p>Welcome to MMOngo. View your players, characters, guilds, and missions from one clean dashboard.</p>
+</div>
 
-<p>Welcome to MMOngo. This page shows a quick overview of players, characters, guilds, and missions.</p>
+<div class="dashboard-grid">
 
-<hr />
+    <div class="dashboard-card">
+        <h2>Players</h2>
 
-<h2>Players</h2>
-@if (Model.Players.Any())
-{
-    <ul>
-        @foreach (var player in Model.Players)
+        @if (Model.Players.Any())
         {
-            <li>
-                <a asp-controller="Players" asp-action="Details" asp-route-username="@player.UserName">
-                    @player.UserName
-                </a>
-                - @player.PlayerName
-            </li>
+            <ul class="dashboard-list">
+                @foreach (var player in Model.Players)
+                {
+                    <li>
+                        <a asp-controller="Players" asp-action="Details" asp-route-username="@player.UserName">
+                            @player.UserName
+                        </a>
+                        <span>@player.PlayerName</span>
+                    </li>
+                }
+            </ul>
         }
-    </ul>
-}
-else
-{
-    <p>No players found.</p>
-}
-
-<hr />
-
-<h2>Characters</h2>
-@if (Model.Characters.Any())
-{
-    <ul>
-        @foreach (var character in Model.Characters)
+        else
         {
-            <li>
-                <a asp-controller="Characters" asp-action="Details" asp-route-id="@character.CharacterId">
-                    @character.CharacterName
-                </a>
-                - Level @character.CurrentLevel
-            </li>
+            <p class="empty-text">No players found.</p>
         }
-    </ul>
-}
-else
-{
-    <p>No characters found.</p>
-}
+    </div>
 
-<hr />
+    <div class="dashboard-card">
+        <h2>Characters</h2>
 
-<h2>Guilds</h2>
-@if (Model.Guilds.Any())
-{
-    <ul>
-        @foreach (var guild in Model.Guilds)
+        @if (Model.Characters.Any())
         {
-            <li>
-                <a asp-controller="Guilds" asp-action="Details" asp-route-name="@guild.GuildName">
-                    @guild.GuildName
-                </a>
-                - Members: @guild.MemberCount
-            </li>
+            <ul class="dashboard-list">
+                @foreach (var character in Model.Characters)
+                {
+                    <li>
+                        <a asp-controller="Characters" asp-action="Details" asp-route-id="@character.CharacterId">
+                            @character.CharacterName
+                        </a>
+                        <span>Level @character.CurrentLevel</span>
+                    </li>
+                }
+            </ul>
         }
-    </ul>
-}
-else
-{
-    <p>No guilds found.</p>
-}
-
-<hr />
-
-<h2>Missions</h2>
-@if (Model.Missions.Any())
-{
-    <ul>
-        @foreach (var mission in Model.Missions)
+        else
         {
-            <li>
-                <a asp-controller="Missions" asp-action="Details" asp-route-name="@mission.MissionName">
-                    @mission.MissionName
-                </a>
-                - @mission.MissionType
-            </li>
+            <p class="empty-text">No characters found.</p>
         }
-    </ul>
-}
-else
-{
-    <p>No missions found.</p>
-}
+    </div>
+
+    <div class="dashboard-card">
+        <h2>Guilds</h2>
+
+        @if (Model.Guilds.Any())
+        {
+            <ul class="dashboard-list">
+                @foreach (var guild in Model.Guilds)
+                {
+                    <li>
+                        <a asp-controller="Guilds" asp-action="Details" asp-route-name="@guild.GuildName">
+                            @guild.GuildName
+                        </a>
+                        <span>Members: @guild.MemberCount</span>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="empty-text">No guilds found.</p>
+        }
+    </div>
+
+    <div class="dashboard-card">
+        <h2>Missions</h2>
+
+        @if (Model.Missions.Any())
+        {
+            <ul class="dashboard-list">
+                @foreach (var mission in Model.Missions)
+                {
+                    <li>
+                        <a asp-controller="Missions" asp-action="Details" asp-route-name="@mission.MissionName">
+                            @mission.MissionName
+                        </a>
+                        <span>@mission.MissionType</span>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="empty-text">No missions found.</p>
+        }
+    </div>
+
+</div>

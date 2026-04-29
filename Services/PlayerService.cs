@@ -1,8 +1,7 @@
 using MMOngo.Models;
+using MMOngo.Models.Test;
 using MMOngo.Services.Interfaces;
 using MMOngo.ViewModels;
-using MongoDB.Bson;
-using MongoDB.Driver;
 
 namespace MMOngo.Services
 {
@@ -10,10 +9,7 @@ namespace MMOngo.Services
     {
         public List<Player> GetAllPlayers()
         {
-            var coll = MongoConnection.Database.GetCollection<Player>("Player");
-            
-            var filter = Builders<Player>.Filter.Empty;
-            return coll.Find(filter).ToList();
+            return FakeGameData.Players;
         }
 
         public Player? GetPlayerByUserName(string username)

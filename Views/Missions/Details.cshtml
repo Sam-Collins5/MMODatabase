@@ -4,16 +4,23 @@
     ViewData["Title"] = "Mission Details";
 }
 
-<h1>Mission Details</h1>
+<div class="page-header">
+    <div>
+        <h1>Mission Details</h1>
+        <p class="page-subtitle">@Model.MissionName</p>
+    </div>
+    <div class="form-actions">
+        <a asp-action="Edit" asp-route-name="@Model.MissionName" class="btn btn-primary">Edit</a>
+        <a asp-action="Delete" asp-route-name="@Model.MissionName" class="btn btn-outline-danger">Delete</a>
+    </div>
+</div>
 
-<h2>@Model.MissionName</h2>
-
-<div>
+<div class="card-panel">
     <p><strong>Mission Type:</strong> @Model.MissionType</p>
     <p><strong>Quest Giver:</strong> @Model.QuestGiver</p>
     <p><strong>Reward:</strong> @Model.Reward</p>
 </div>
 
-<p>
+<p class="mt-3">
     <a asp-action="Index">Back to Missions</a>
 </p>
