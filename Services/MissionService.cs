@@ -3,6 +3,11 @@ using MMOngo.Models;
 using MMOngo.Models.Test;
 using MMOngo.Services.Interfaces;
 using MMOngo.ViewModels;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Driver;
+using System.Numerics;
 
 namespace MMOngo.Services
 {
@@ -10,12 +15,18 @@ namespace MMOngo.Services
     {
         public List<Mission> GetAllMissions()
         {
-            return FakeGameData.Missions;
+            var coll = MongoConnection.Database.GetCollection<Mission>("Missions");
+
+            var filter = Builders<Mission>.Filter.Empty;
+            return coll.Find(filter).ToList();
         }
 
         public Mission? GetMissionByName(string name)
         {
-            return FakeGameData.Missions.FirstOrDefault(m => m.MissionName == name);
+            var coll = MongoConnection.Database.GetCollection<Mission>("Missions");
+
+            var filter = Builders<Mission>.Filter.Empty;
+            return coll.Find(filter).ToList().FirstOrDefault(m => m.MissionName == name);
         }
 
         public MissionFormViewModel GetMissionCreateForm()
@@ -49,13 +60,13 @@ namespace MMOngo.Services
 
         public void AddMission(MissionFormViewModel form)
         {
-            FakeGameData.Missions.Add(new Mission
-            {
-                MissionName = form.MissionName.Trim(),
-                MissionType = form.MissionType.Trim(),
-                QuestGiver = form.QuestGiver.Trim(),
-                Reward = form.Reward
-            });
+            Mission mission = new Mission();
+            mission.MissionName = form.MissionName.Trim();
+            mission.MissionType = form.MissionType;
+            mission.QuestGiver = form.QuestGiver.Trim();
+            mission.Reward = form.Reward;
+            var coll = MongoConnection.Database.GetCollection<Mission>("Missions");
+            coll.InsertOne(mission);
         }
 
         public void UpdateMission(MissionFormViewModel form)
@@ -67,27 +78,15 @@ namespace MMOngo.Services
                 return;
             }
 
-            string oldName = mission.MissionName;
-            string newName = form.MissionName.Trim();
-
-            mission.MissionName = newName;
-            mission.MissionType = form.MissionType.Trim();
-            mission.QuestGiver = form.QuestGiver.Trim();
-            mission.Reward = form.Reward;
-
-            if (!string.Equals(oldName, newName, StringComparison.Ordinal))
-            {
-                foreach (var character in FakeGameData.Characters)
-                {
-                    ReplaceName(character.CurrentMissions, oldName, newName);
-                    ReplaceName(character.CompletedMissions, oldName, newName);
-                }
-
-                foreach (var npc in FakeGameData.Npcs)
-                {
-                    ReplaceName(npc.Quests, oldName, newName);
-                }
-            }
+            var coll = MongoConnection.Database.GetCollection<Mission>("Missions");
+            var filter = Builders<Mission>.Filter.Eq("MissionName", mission.MissionName);
+            var combinedUpdate = Builders<Mission>.Update.Combine(
+                Builders<Mission>.Update.Set("MissionName", form.MissionName),
+                Builders<Mission>.Update.Set("MissionType", form.MissionType),
+                Builders<Mission>.Update.Set("QuestGiver", form.QuestGiver),
+                Builders<Mission>.Update.Set("Reward", form.Reward)
+            );
+            coll.UpdateOne(filter, combinedUpdate);
         }
 
         public void DeleteMission(string name)
@@ -99,23 +98,29 @@ namespace MMOngo.Services
                 return;
             }
 
-            foreach (var character in FakeGameData.Characters)
             {
-                character.CurrentMissions.RemoveAll(m => m == mission.MissionName);
-                character.CompletedMissions.RemoveAll(m => m == mission.MissionName);
+                var characterService = new CharacterService();
+                var characters = characterService.GetAllCharacters();
+                foreach (var character in characters)
+                {
+                    character.CurrentMissions.RemoveAll(m => m == mission.MissionName);
+                    character.CompletedMissions.RemoveAll(m => m == mission.MissionName);
+                    characterService.UpdateCharacter(character);
+                }
             }
 
-            foreach (var npc in FakeGameData.Npcs)
             {
-                npc.Quests.RemoveAll(q => q == mission.MissionName);
+                var coll = MongoConnection.Database.GetCollection<Mission>("Missions");
+                var filter = Builders<Mission>.Filter.Eq("MissionName", mission.MissionName);
+                coll.DeleteOne(filter);
             }
-
-            FakeGameData.Missions.Remove(mission);
         }
 
         private void PopulateOptions(MissionFormViewModel form)
         {
-            form.QuestGiverOptions = FakeGameData.Npcs
+            var coll = MongoConnection.Database.GetCollection<Npc>("NPCs");
+            var filter = Builders<Npc>.Filter.Empty;
+            form.QuestGiverOptions = coll.Find(filter).ToList()
                 .Select(n => new SelectListItem { Value = n.NpcName, Text = n.NpcName })
                 .ToList();
         }

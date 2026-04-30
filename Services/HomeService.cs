@@ -12,8 +12,8 @@ namespace MMOngo.Services
             {
                 Players = new PlayerService().GetAllPlayers(),
                 Characters = new CharacterService().GetAllCharacters(),
-                Guilds = FakeGameData.Guilds,
-                Missions = FakeGameData.Missions
+                Guilds = new GuildService().GetAllGuilds(),
+                Missions = new MissionService().GetAllMissions()
             };
         }
     }

@@ -193,6 +193,47 @@ namespace MMOngo.Services
             SyncGuildMemberships(existingCharacter);
         }
 
+        public void UpdateCharacter(PlayerCharacter form)
+        {
+            PlayerCharacter? existingCharacter = GetCharacterById(form.CharacterId);
+
+            if (existingCharacter == null)
+            {
+                return;
+            }
+
+            string oldPlayerName = existingCharacter.UserName;
+            List<string> oldGuilds = new List<string>(existingCharacter.GuildMemberships);
+            string oldCharacterName = existingCharacter.CharacterName;
+
+            PlayerCharacter updated = form;
+
+            var coll = MongoConnection.Database.GetCollection<PlayerCharacter>("PlayerCharacters");
+            var filter = Builders<PlayerCharacter>.Filter.Eq("UserName", existingCharacter.UserName);
+            var combinedUpdate = Builders<PlayerCharacter>.Update.Combine(
+                Builders<PlayerCharacter>.Update.Set("CharacterName", updated.CharacterName),
+                Builders<PlayerCharacter>.Update.Set("UserName", updated.UserName),
+                Builders<PlayerCharacter>.Update.Set("CurrentLevel", updated.CurrentLevel),
+                Builders<PlayerCharacter>.Update.Set("Allies", updated.Allies),
+                Builders<PlayerCharacter>.Update.Set("Equipment", updated.Equipment),
+                Builders<PlayerCharacter>.Update.Set("CurrentMissions", updated.CurrentMissions),
+                Builders<PlayerCharacter>.Update.Set("CompletedMissions", updated.CompletedMissions),
+                Builders<PlayerCharacter>.Update.Set("XP", updated.XP),
+                Builders<PlayerCharacter>.Update.Set("KnownSpells", updated.KnownSpells),
+                Builders<PlayerCharacter>.Update.Set("GuildMemberships", updated.GuildMemberships)
+            );
+            coll.UpdateOne(filter, combinedUpdate);
+
+            var guildColl = MongoConnection.Database.GetCollection<Guild>("Guilds");
+            var guildFilter = Builders<Guild>.Filter.Empty;
+            var guilds = guildColl.Find(guildFilter).ToList();
+
+            SyncPlayerCharacterNames(oldPlayerName);
+            SyncPlayerCharacterNames(existingCharacter.UserName);
+            RemoveCharacterFromGuilds(existingCharacter.CharacterName, oldGuilds.Except(existingCharacter.GuildMemberships));
+            SyncGuildMemberships(existingCharacter);
+        }
+
         public void DeleteCharacter(int id)
         {
             PlayerCharacter? character = GetCharacterById(id);
@@ -283,11 +324,12 @@ namespace MMOngo.Services
 
         private void SyncPlayerCharacterNames(string playerName)
         {
-            Player? player = FakeGameData.Players.FirstOrDefault(p => p.PlayerName == playerName);
+            var playerService = new PlayerService();
+            Player? player = playerService.GetAllPlayers().FirstOrDefault(p => p.PlayerName == playerName);
 
             if (player != null)
             {
-                player.Characters = FakeGameData.Characters
+                player.Characters = GetAllCharacters()
                     .Where(c => c.UserName == playerName)
                     .Select(c => c.CharacterName)
                     .ToList();
@@ -296,7 +338,8 @@ namespace MMOngo.Services
 
         private void SyncGuildMemberships(PlayerCharacter character)
         {
-            foreach (var guild in FakeGameData.Guilds)
+            var guildService = new GuildService();
+            foreach (var guild in guildService.GetAllGuilds())
             {
                 bool shouldBeMember = character.GuildMemberships.Contains(guild.GuildName);
                 bool alreadyMember = guild.Members.Contains(character.CharacterName);
@@ -312,19 +355,22 @@ namespace MMOngo.Services
                 }
 
                 guild.MemberCount = guild.Members.Count;
+                guildService.UpdateGuild(guild);
             }
         }
 
         private void RemoveCharacterFromGuilds(string characterName, IEnumerable<string> guildNames)
         {
+            var guildService = new GuildService();
             foreach (var guildName in guildNames)
             {
-                Guild? guild = FakeGameData.Guilds.FirstOrDefault(g => g.GuildName == guildName);
+                Guild? guild = guildService.GetAllGuilds().FirstOrDefault(g => g.GuildName == guildName);
 
                 if (guild != null)
                 {
                     guild.Members.Remove(characterName);
                     guild.MemberCount = guild.Members.Count;
+                    guildService.UpdateGuild(guild);
                 }
             }
         }
