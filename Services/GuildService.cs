@@ -3,6 +3,9 @@ using MMOngo.Models;
 using MMOngo.Models.Test;
 using MMOngo.Services.Interfaces;
 using MMOngo.ViewModels;
+using MongoDB.Driver;
+using System.Numerics;
+using System.Reflection;
 
 namespace MMOngo.Services
 {
@@ -10,12 +13,18 @@ namespace MMOngo.Services
     {
         public List<Guild> GetAllGuilds()
         {
-            return FakeGameData.Guilds;
+            var coll = MongoConnection.Database.GetCollection<Guild>("Guilds");
+
+            var filter = Builders<Guild>.Filter.Empty;
+            return coll.Find(filter).ToList();
         }
 
         public Guild? GetGuildByName(string name)
         {
-            return FakeGameData.Guilds.FirstOrDefault(g => g.GuildName == name);
+            var coll = MongoConnection.Database.GetCollection<Guild>("Guilds");
+
+            var filter = Builders<Guild>.Filter.Empty;
+            return coll.Find(filter).ToList().FirstOrDefault(g => g.GuildName == name);
         }
 
         public GuildDetailsViewModel? GetGuildDetails(string name)
@@ -30,7 +39,7 @@ namespace MMOngo.Services
             return new GuildDetailsViewModel
             {
                 Guild = guild,
-                Members = FakeGameData.Characters
+                Members = new CharacterService().GetAllCharacters()
                     .Where(c => guild.Members.Contains(c.CharacterName))
                     .ToList()
             };
@@ -78,7 +87,10 @@ namespace MMOngo.Services
             };
 
             guild.MemberCount = guild.Members.Count;
-            FakeGameData.Guilds.Add(guild);
+
+            var coll = MongoConnection.Database.GetCollection<Guild>("Guilds");
+            coll.InsertOne(guild);
+
             SyncCharacterMemberships(guild.GuildName, guild.Members, new List<string>());
         }
 
@@ -95,26 +107,48 @@ namespace MMOngo.Services
             List<string> oldMembers = new List<string>(guild.Members);
             string newName = form.GuildName.Trim();
 
-            guild.GuildName = newName;
-            guild.Creator = form.Creator.Trim();
-            guild.CreationDate = form.CreationDate.Trim();
-            guild.Benefits = SplitList(form.BenefitsText);
-            guild.Members = CleanList(form.SelectedMembers);
-            guild.MemberCount = guild.Members.Count;
+            Console.WriteLine(guild.GuildName);
+            Console.WriteLine(form.GuildName);
 
-            if (!string.Equals(oldName, newName, StringComparison.Ordinal))
+            var coll = MongoConnection.Database.GetCollection<Guild>("Guilds");
+            var filter = Builders<Guild>.Filter.Eq("GuildName", form.OriginalGuildName);
+            var combinedUpdate = Builders<Guild>.Update.Combine(
+                Builders<Guild>.Update.Set("GuildName", form.GuildName),
+                Builders<Guild>.Update.Set("Creator", form.Creator),
+                Builders<Guild>.Update.Set("MemberCount", form.SelectedMembers.Count),
+                Builders<Guild>.Update.Set("Members", form.SelectedMembers),
+                Builders<Guild>.Update.Set("CreationDate", form.CreationDate),
+                Builders<Guild>.Update.Set("Benefits", SplitList(form.BenefitsText))
+            );
+            coll.UpdateOne(filter, combinedUpdate);
+
+            SyncCharacterMemberships(newName, guild.Members, oldMembers);
+        }
+
+        public void UpdateGuild(Guild form)
+        {
+            Guild? guild = GetGuildByName(form.GuildName);
+
+            if (guild == null)
             {
-                foreach (var character in FakeGameData.Characters)
-                {
-                    for (int i = 0; i < character.GuildMemberships.Count; i++)
-                    {
-                        if (character.GuildMemberships[i] == oldName)
-                        {
-                            character.GuildMemberships[i] = newName;
-                        }
-                    }
-                }
+                return;
             }
+
+            string oldName = guild.GuildName;
+            List<string> oldMembers = new List<string>(guild.Members);
+            string newName = form.GuildName.Trim();
+
+            var coll = MongoConnection.Database.GetCollection<Guild>("Guilds");
+            var filter = Builders<Guild>.Filter.Eq("GuildName", guild.GuildName);
+            var combinedUpdate = Builders<Guild>.Update.Combine(
+                Builders<Guild>.Update.Set("GuildName", form.GuildName),
+                Builders<Guild>.Update.Set("Creator", form.Creator),
+                Builders<Guild>.Update.Set("MemberCount", form.MemberCount),
+                Builders<Guild>.Update.Set("Members", form.Members),
+                Builders<Guild>.Update.Set("CreationDate", form.CreationDate),
+                Builders<Guild>.Update.Set("Benefits", form.Benefits)
+            );
+            coll.UpdateOne(filter, combinedUpdate);
 
             SyncCharacterMemberships(newName, guild.Members, oldMembers);
         }
@@ -128,17 +162,29 @@ namespace MMOngo.Services
                 return;
             }
 
-            foreach (var character in FakeGameData.Characters)
             {
-                character.GuildMemberships.RemoveAll(g => g == guild.GuildName);
+                var coll = MongoConnection.Database.GetCollection<PlayerCharacter>("PlayerCharacters");
+                foreach (var character in new CharacterService().GetAllCharacters())
+                {
+                    character.GuildMemberships.RemoveAll(g => g == guild.GuildName);
+                    var filter = Builders<PlayerCharacter>.Filter.Empty;
+                    var combinedUpdate = Builders<PlayerCharacter>.Update.Combine(
+                        Builders<PlayerCharacter>.Update.Set("GuildMemberships", character.GuildMemberships)
+                    );
+                    coll.UpdateOne(filter, combinedUpdate);
+                }
             }
 
-            FakeGameData.Guilds.Remove(guild);
+            {
+                var coll = MongoConnection.Database.GetCollection<Guild>("Guild");
+                var filter = Builders<Guild>.Filter.Eq("GuildName", guild.GuildName);
+                coll.DeleteOne(filter);
+            }
         }
 
         private void PopulateOptions(GuildFormViewModel form)
         {
-            form.MemberOptions = FakeGameData.Characters
+            form.MemberOptions = new CharacterService().GetAllCharacters()
                 .Select(c => new SelectListItem { Value = c.CharacterName, Text = c.CharacterName })
                 .ToList();
         }
@@ -161,7 +207,9 @@ namespace MMOngo.Services
 
         private void SyncCharacterMemberships(string guildName, List<string> newMembers, List<string> oldMembers)
         {
-            foreach (var character in FakeGameData.Characters)
+            var characterService = new CharacterService();
+            var coll = MongoConnection.Database.GetCollection<PlayerCharacter>("PlayerCharacters");
+            foreach (var character in characterService.GetAllCharacters())
             {
                 bool shouldBeMember = newMembers.Contains(character.CharacterName);
                 bool wasMember = oldMembers.Contains(character.CharacterName) || character.GuildMemberships.Contains(guildName);
@@ -175,6 +223,12 @@ namespace MMOngo.Services
                 {
                     character.GuildMemberships.RemoveAll(g => g == guildName);
                 }
+
+                var filter = Builders<PlayerCharacter>.Filter.Empty;
+                var combinedUpdate = Builders<PlayerCharacter>.Update.Combine(
+                    Builders<PlayerCharacter>.Update.Set("GuildMemberships", character.GuildMemberships)
+                );
+                coll.UpdateOne(filter, combinedUpdate);
             }
         }
     }
