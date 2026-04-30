@@ -1,9 +1,10 @@
+using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MMOngo.Models;
 using MMOngo.Models.Test;
 using MMOngo.Services.Interfaces;
-using MongoDB.Driver;
 using MMOngo.ViewModels;
+using MongoDB.Driver;
 
 namespace MMOngo.Services
 {
@@ -24,7 +25,6 @@ namespace MMOngo.Services
 
             return npcColl.Find(npcFilter).ToList()
                 .FirstOrDefault(n => n.NpcName == name);
-            return FakeGameData.Npcs.FirstOrDefault(n => n.NpcName == name);
         }
 
         public NpcFormViewModel GetNpcCreateForm()
@@ -63,7 +63,12 @@ namespace MMOngo.Services
 
         public void AddNpc(NpcFormViewModel form)
         {
-            FakeGameData.Npcs.Add(BuildNpc(form));
+            var coll = MongoConnection.Database.GetCollection<Npc>("NPCs");
+            var filter = Builders<Npc>.Filter.Empty;
+            var npcs = coll.Find(filter).ToList();
+
+            Npc npc = BuildNpc(form);
+            coll.InsertOne(npc);           
         }
 
         public void UpdateNpc(NpcFormViewModel form)
@@ -88,7 +93,7 @@ namespace MMOngo.Services
 
             if (!string.Equals(oldName, npc.NpcName, StringComparison.Ordinal))
             {
-                foreach (var mission in FakeGameData.Missions.Where(m => m.QuestGiver == oldName))
+                foreach (var mission in MongoConnection.Database.GetCollection<Mission>("Missions").Find(Builders<Mission>.Filter.Empty).ToList().Where(m => m.QuestGiver == oldName))
                 {
                     mission.QuestGiver = npc.NpcName;
                 }
@@ -104,12 +109,14 @@ namespace MMOngo.Services
                 return;
             }
 
-            foreach (var mission in FakeGameData.Missions.Where(m => m.QuestGiver == npc.NpcName))
+            foreach (var mission in MongoConnection.Database.GetCollection<Mission>("Missions").Find(Builders<Mission>.Filter.Empty).ToList().Where(m => m.QuestGiver == npc.NpcName))
             {
                 mission.QuestGiver = string.Empty;
             }
 
-            FakeGameData.Npcs.Remove(npc);
+            var coll = MongoConnection.Database.GetCollection<Npc>("NPCs");
+            var filter = Builders<Npc>.Filter.Eq("NpcName", npc.NpcName);
+            coll.DeleteOne(filter);
         }
 
         private Npc BuildNpc(NpcFormViewModel form)
@@ -133,30 +140,30 @@ namespace MMOngo.Services
 
         private void PopulateOptions(NpcFormViewModel form)
         {
-            form.WareOptions = FakeGameData.Weapons
+            form.WareOptions = MongoConnection.Database.GetCollection<Weapon>("Weapons").Find(Builders<Weapon>.Filter.Empty).ToList()
                 .Select(w => new SelectListItem { Value = w.WeaponName, Text = $"Weapon: {w.WeaponName}" })
-                .Concat(FakeGameData.Armors.Select(a => new SelectListItem { Value = a.ArmorName, Text = $"Armor: {a.ArmorName}" }))
-                .Concat(FakeGameData.Tools.Select(t => new SelectListItem { Value = t.ToolName, Text = $"Tool: {t.ToolName}" }))
-                .Concat(FakeGameData.Spells.Select(s => new SelectListItem { Value = s.SpellName, Text = $"Spell: {s.SpellName}" }))
+                .Concat(MongoConnection.Database.GetCollection<Armor>("Armors").Find(Builders<Armor>.Filter.Empty).ToList().Select(a => new SelectListItem { Value = a.ArmorName, Text = $"Armor: {a.ArmorName}" }))
+                .Concat(MongoConnection.Database.GetCollection<ToolItem>("Tools").Find(Builders<ToolItem>.Filter.Empty).ToList().Select(t => new SelectListItem { Value = t.ToolName, Text = $"Tool: {t.ToolName}" }))
+                .Concat(MongoConnection.Database.GetCollection<Spell>("Spells").Find(Builders<Spell>.Filter.Empty).ToList().Select(s => new SelectListItem { Value = s.SpellName, Text = $"Spell: {s.SpellName}" }))
                 .ToList();
 
-            form.QuestOptions = FakeGameData.Missions
+            form.QuestOptions = MongoConnection.Database.GetCollection<Mission>("Missions").Find(Builders<Mission>.Filter.Empty).ToList()
                 .Select(m => new SelectListItem { Value = m.MissionName, Text = m.MissionName })
                 .ToList();
 
-            form.WeaponOptions = FakeGameData.Weapons
+            form.WeaponOptions = MongoConnection.Database.GetCollection<Weapon>("Weapons").Find(Builders<Weapon>.Filter.Empty).ToList()
                 .Select(w => new SelectListItem { Value = w.WeaponName, Text = w.WeaponName })
                 .ToList();
 
-            form.ArmorOptions = FakeGameData.Armors
+            form.ArmorOptions = MongoConnection.Database.GetCollection<Armor>("Armors").Find(Builders<Armor>.Filter.Empty).ToList()
                 .Select(a => new SelectListItem { Value = a.ArmorName, Text = a.ArmorName })
                 .ToList();
 
-            form.ToolOptions = FakeGameData.Tools
+            form.ToolOptions = MongoConnection.Database.GetCollection<ToolItem>("Tools").Find(Builders<ToolItem>.Filter.Empty).ToList()
                 .Select(t => new SelectListItem { Value = t.ToolName, Text = t.ToolName })
                 .ToList();
 
-            form.SpellOptions = FakeGameData.Spells
+            form.SpellOptions = MongoConnection.Database.GetCollection<Spell>("Spells").Find(Builders<Spell>.Filter.Empty).ToList()
                 .Select(s => new SelectListItem { Value = s.SpellName, Text = s.SpellName })
                 .ToList();
         }
