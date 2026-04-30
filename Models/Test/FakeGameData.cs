@@ -21,7 +21,7 @@ namespace MMOngo.Models.Test
             {
                 CharacterId = 1,
                 CharacterName = "Man Man",
-                PlayerName = "Eli Walker",
+                UserName = "Eli Walker",
                 CurrentLevel = 36,
                 Allies = new List<string> { "Mr. Accordion", "The Amazing Shoe" },
                 Equipment = new EquipmentSet
@@ -40,7 +40,7 @@ namespace MMOngo.Models.Test
             {
                 CharacterId = 2,
                 CharacterName = "Dr. Destruction",
-                PlayerName = "Eli Walker",
+                UserName = "Eli Walker",
                 CurrentLevel = 24,
                 Allies = new List<string>(),
                 Equipment = new EquipmentSet(),
@@ -199,7 +199,7 @@ namespace MMOngo.Models.Test
             new Transaction
             {
                 TransactionId = 17,
-                PlayerName = "Eli Walker",
+                UserName = "EliTheMage",
                 ItemType = "Weapon",
                 ItemId = 1,
                 Total = 250,
