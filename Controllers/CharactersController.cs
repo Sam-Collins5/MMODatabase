@@ -30,7 +30,6 @@ namespace MMOngo.Controllers
             return View(vm);
         }
 
-        [HttpGet]
         public IActionResult Create()
         {
             return View(_characterService.GetCharacterCreateForm());
@@ -42,18 +41,16 @@ namespace MMOngo.Controllers
         {
             if (!ModelState.IsValid)
             {
-                RehydrateForm(form);
-                return View(form);
+                return View(_characterService.GetCharacterCreateForm());
             }
 
             _characterService.AddCharacter(form);
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpGet]
         public IActionResult Edit(int id)
         {
-            CharacterFormViewModel? form = _characterService.GetCharacterEditForm(id);
+            var form = _characterService.GetCharacterEditForm(id);
 
             if (form == null)
             {
@@ -69,15 +66,20 @@ namespace MMOngo.Controllers
         {
             if (!ModelState.IsValid)
             {
-                RehydrateForm(form);
-                return View(form);
+                var fixedForm = _characterService.GetCharacterEditForm(form.CharacterId);
+
+                if (fixedForm == null)
+                {
+                    return NotFound();
+                }
+
+                return View(fixedForm);
             }
 
             _characterService.UpdateCharacter(form);
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpGet]
         public IActionResult Delete(int id)
         {
             var character = _characterService.GetCharacterById(id);
@@ -90,29 +92,13 @@ namespace MMOngo.Controllers
             return View(character);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        [ActionName("Delete")]
+        public IActionResult DeleteConfirmed(int characterId)
         {
-            _characterService.DeleteCharacter(id);
+            _characterService.DeleteCharacter(characterId);
             return RedirectToAction(nameof(Index));
-        }
-
-        private void RehydrateForm(CharacterFormViewModel form)
-        {
-            CharacterFormViewModel source = form.CharacterId > 0
-                ? _characterService.GetCharacterEditForm(form.CharacterId) ?? _characterService.GetCharacterCreateForm()
-                : _characterService.GetCharacterCreateForm();
-
-            form.PlayerOptions = source.PlayerOptions;
-            form.AllyOptions = source.AllyOptions;
-            form.WeaponOptions = source.WeaponOptions;
-            form.ArmorOptions = source.ArmorOptions;
-            form.ToolOptions = source.ToolOptions;
-            form.CurrentMissionOptions = source.CurrentMissionOptions;
-            form.CompletedMissionOptions = source.CompletedMissionOptions;
-            form.SpellOptions = source.SpellOptions;
-            form.GuildOptions = source.GuildOptions;
         }
     }
 }

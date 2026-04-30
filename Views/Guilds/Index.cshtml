@@ -4,37 +4,47 @@
     ViewData["Title"] = "Guilds";
 }
 
-<h1>Guilds</h1>
+<div class="page-header">
+    <div>
+        <h1>Guilds</h1>
+        <p class="page-subtitle">Create and manage guild data.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-success">Create Guild</a>
+</div>
 
 @if (Model.Any())
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Guild Name</th>
-                <th>Creator</th>
-                <th>Member Count</th>
-                <th>Creation Date</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var guild in Model)
-            {
+    <div class="card-panel">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@guild.GuildName</td>
-                    <td>@guild.Creator</td>
-                    <td>@guild.MemberCount</td>
-                    <td>@guild.CreationDate</td>
-                    <td>
-                        <a asp-action="Details" asp-route-name="@guild.GuildName">View Details</a>
-                    </td>
+                    <th>Guild Name</th>
+                    <th>Creator</th>
+                    <th>Member Count</th>
+                    <th>Creation Date</th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var guild in Model)
+                {
+                    <tr>
+                        <td>@guild.GuildName</td>
+                        <td>@guild.Creator</td>
+                        <td>@guild.MemberCount</td>
+                        <td>@guild.CreationDate</td>
+                        <td class="table-actions">
+                            <a asp-action="Details" asp-route-name="@guild.GuildName">Details</a>
+                            <a asp-action="Edit" asp-route-name="@guild.GuildName">Edit</a>
+                            <a asp-action="Delete" asp-route-name="@guild.GuildName">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 else
 {
-    <p>No guilds found.</p>
+    <div class="empty-state">No guilds found.</div>
 }

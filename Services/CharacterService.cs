@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MMOngo.Models;
+using MMOngo.Models.Test;
 using MMOngo.Services.Interfaces;
+using MMOngo.Services;
 using MMOngo.ViewModels;
 using MongoDB.Driver;
+using System.Numerics;
 
 namespace MMOngo.Services
 {
@@ -150,30 +153,39 @@ namespace MMOngo.Services
 
             PlayerCharacter updated = BuildCharacterFromForm(form, form.CharacterId);
 
-            existingCharacter.CharacterName = updated.CharacterName;
-            existingCharacter.UserName = updated.UserName;
-            existingCharacter.CurrentLevel = updated.CurrentLevel;
-            existingCharacter.Allies = updated.Allies;
-            existingCharacter.Equipment = updated.Equipment;
-            existingCharacter.CurrentMissions = updated.CurrentMissions;
-            existingCharacter.CompletedMissions = updated.CompletedMissions;
-            existingCharacter.XP = updated.XP;
-            existingCharacter.KnownSpells = updated.KnownSpells;
-            existingCharacter.GuildMemberships = updated.GuildMemberships;
+            var coll = MongoConnection.Database.GetCollection<PlayerCharacter>("PlayerCharacters");
+            var filter = Builders<PlayerCharacter>.Filter.Eq("UserName", existingCharacter.UserName);
+            var combinedUpdate = Builders<PlayerCharacter>.Update.Combine(
+                Builders<PlayerCharacter>.Update.Set("CharacterName", updated.CharacterName),
+                Builders<PlayerCharacter>.Update.Set("UserName", updated.UserName),
+                Builders<PlayerCharacter>.Update.Set("CurrentLevel", updated.CurrentLevel),
+                Builders<PlayerCharacter>.Update.Set("Allies", updated.Allies),
+                Builders<PlayerCharacter>.Update.Set("Equipment", updated.Equipment),
+                Builders<PlayerCharacter>.Update.Set("CurrentMissions", updated.CurrentMissions),
+                Builders<PlayerCharacter>.Update.Set("CompletedMissions", updated.CompletedMissions),
+                Builders<PlayerCharacter>.Update.Set("XP", updated.XP),
+                Builders<PlayerCharacter>.Update.Set("KnownSpells", updated.KnownSpells),
+                Builders<PlayerCharacter>.Update.Set("GuildMemberships", updated.GuildMemberships)
+            );
+            coll.UpdateOne(filter, combinedUpdate);
 
-            if (!string.Equals(oldCharacterName, existingCharacter.CharacterName, StringComparison.Ordinal))
-            {
-                foreach (var guild in FakeGameData.Guilds)
-                {
-                    for (int i = 0; i < guild.Members.Count; i++)
-                    {
-                        if (guild.Members[i] == oldCharacterName)
-                        {
-                            guild.Members[i] = existingCharacter.CharacterName;
-                        }
-                    }
-                }
-            }
+            var guildColl = MongoConnection.Database.GetCollection<Guild>("Guilds");
+            var guildFilter = Builders<Guild>.Filter.Empty;
+            var guilds = guildColl.Find(guildFilter).ToList();
+
+            //if (!string.Equals(oldCharacterName, existingCharacter.CharacterName, StringComparison.Ordinal))
+            //{
+            //    foreach (var guild in guilds)
+            //    {
+            //        for (int i = 0; i < guild.Members.Count; i++)
+            //        {
+            //            if (guild.Members[i] == oldCharacterName)
+            //            {
+            //                guild.Members[i] = existingCharacter.CharacterName;
+            //            }
+            //        }
+            //    }
+            //}
 
             SyncPlayerCharacterNames(oldPlayerName);
             SyncPlayerCharacterNames(existingCharacter.UserName);
@@ -190,7 +202,10 @@ namespace MMOngo.Services
                 return;
             }
 
-            FakeGameData.Characters.Remove(character);
+            var coll = MongoConnection.Database.GetCollection<PlayerCharacter>("PlayerCharacters");
+            var filter = Builders<PlayerCharacter>.Filter.Eq("CharacterId", id);
+            coll.DeleteOne(filter);
+
             SyncPlayerCharacterNames(character.UserName);
             RemoveCharacterFromGuilds(character.CharacterName, character.GuildMemberships);
         }
@@ -228,40 +243,40 @@ namespace MMOngo.Services
 
         private void PopulateOptions(CharacterFormViewModel form, int? currentCharacterId)
         {
-            form.PlayerOptions = FakeGameData.Players
+            form.PlayerOptions = new PlayerService().GetAllPlayers()
                 .Select(p => new SelectListItem { Value = p.PlayerName, Text = $"{p.PlayerName} ({p.UserName})" })
                 .ToList();
 
-            form.AllyOptions = FakeGameData.Characters
+            form.AllyOptions = GetAllCharacters()
                 .Where(c => !currentCharacterId.HasValue || c.CharacterId != currentCharacterId.Value)
                 .Select(c => new SelectListItem { Value = c.CharacterName, Text = c.CharacterName })
                 .ToList();
 
-            form.WeaponOptions = FakeGameData.Weapons
+            form.WeaponOptions = MongoConnection.Database.GetCollection<Weapon>("Weapons").Find(Builders<Weapon>.Filter.Empty).ToList()
                 .Select(w => new SelectListItem { Value = w.WeaponName, Text = w.WeaponName })
                 .ToList();
 
-            form.ArmorOptions = FakeGameData.Armors
+            form.ArmorOptions = MongoConnection.Database.GetCollection<Armor>("Armors").Find(Builders<Armor>.Filter.Empty).ToList()
                 .Select(a => new SelectListItem { Value = a.ArmorName, Text = a.ArmorName })
                 .ToList();
 
-            form.ToolOptions = FakeGameData.Tools
+            form.ToolOptions = MongoConnection.Database.GetCollection<ToolItem>("Tools").Find(Builders<ToolItem>.Filter.Empty).ToList()
                 .Select(t => new SelectListItem { Value = t.ToolName, Text = t.ToolName })
                 .ToList();
 
-            form.CurrentMissionOptions = FakeGameData.Missions
+            form.CurrentMissionOptions = MongoConnection.Database.GetCollection<Mission>("Missions").Find(Builders<Mission>.Filter.Empty).ToList()
                 .Select(m => new SelectListItem { Value = m.MissionName, Text = m.MissionName })
                 .ToList();
 
-            form.CompletedMissionOptions = FakeGameData.Missions
+            form.CompletedMissionOptions = MongoConnection.Database.GetCollection<Mission>("Missions").Find(Builders<Mission>.Filter.Empty).ToList()
                 .Select(m => new SelectListItem { Value = m.MissionName, Text = m.MissionName })
                 .ToList();
 
-            form.SpellOptions = FakeGameData.Spells
+            form.SpellOptions = MongoConnection.Database.GetCollection<Spell>("Spells").Find(Builders<Spell>.Filter.Empty).ToList()
                 .Select(s => new SelectListItem { Value = s.SpellName, Text = s.SpellName })
                 .ToList();
 
-            form.GuildOptions = FakeGameData.Guilds
+            form.GuildOptions = MongoConnection.Database.GetCollection<Guild>("Guilds").Find(Builders<Guild>.Filter.Empty).ToList()
                 .Select(g => new SelectListItem { Value = g.GuildName, Text = g.GuildName })
                 .ToList();
         }

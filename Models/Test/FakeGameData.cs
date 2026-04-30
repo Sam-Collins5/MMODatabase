@@ -1,4 +1,4 @@
-namespace MMOngo.Models
+namespace MMOngo.Models.Test
 {
     public static class FakeGameData
     {
@@ -199,7 +199,7 @@ namespace MMOngo.Models
             new Transaction
             {
                 TransactionId = 17,
-                UserName = "Eli Walker",
+                UserName = "EliTheMage",
                 ItemType = "Weapon",
                 ItemId = 1,
                 Total = 250,

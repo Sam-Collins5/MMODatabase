@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using MMOngo.Models;
 using MMOngo.Services.Interfaces;
+using MMOngo.Models;
 
 namespace MMOngo.Controllers
 {
@@ -61,11 +61,6 @@ namespace MMOngo.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Player player)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(player);
-            }
-
             _playerService.UpdatePlayer(player);
             return RedirectToAction(nameof(Index));
         }
