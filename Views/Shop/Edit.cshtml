@@ -1,0 +1,103 @@
+@model MMOngo.ViewModels.ShopItemFormViewModel
+
+@{
+    ViewData["Title"] = $"Edit {Model.CategoryTitle}";
+}
+
+<div class="form-shell">
+    <h1>Edit @Model.CategoryTitle</h1>
+
+    <form asp-action="Edit" method="post" class="entity-form">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input asp-for="Category" type="hidden" />
+        <input asp-for="ItemId" type="hidden" />
+        <input asp-for="OriginalName" type="hidden" />
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        @if (Model.IsWeapon || Model.IsArmor || Model.IsTool)
+        {
+            <div class="form-grid">
+                <div class="mb-3">
+                    <label asp-for="Weight" class="form-label"></label>
+                    <input asp-for="Weight" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Price" class="form-label"></label>
+                    <input asp-for="Price" class="form-control" />
+                </div>
+            </div>
+        }
+
+        @if (Model.IsWeapon)
+        {
+            <div class="mb-3">
+                <label asp-for="Damage" class="form-label"></label>
+                <input asp-for="Damage" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="SpecialAttributesText" class="form-label"></label>
+                <input asp-for="SpecialAttributesText" class="form-control" />
+            </div>
+        }
+
+        @if (Model.IsArmor)
+        {
+            <div class="mb-3">
+                <label asp-for="Defense" class="form-label"></label>
+                <input asp-for="Defense" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="SpecialAttributesText" class="form-label"></label>
+                <input asp-for="SpecialAttributesText" class="form-control" />
+            </div>
+        }
+
+        @if (Model.IsTool)
+        {
+            <div class="mb-3">
+                <label asp-for="UsageText" class="form-label"></label>
+                <input asp-for="UsageText" class="form-control" />
+            </div>
+        }
+
+        @if (Model.IsSpell)
+        {
+            <div class="form-grid">
+                <div class="mb-3">
+                    <label asp-for="SpellDamage" class="form-label"></label>
+                    <input asp-for="SpellDamage" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="SpellHealing" class="form-label"></label>
+                    <input asp-for="SpellHealing" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="MpCost" class="form-label"></label>
+                    <input asp-for="MpCost" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="GoldCost" class="form-label"></label>
+                    <input asp-for="GoldCost" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Range" class="form-label"></label>
+                    <input asp-for="Range" class="form-control" />
+                </div>
+            </div>
+        }
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

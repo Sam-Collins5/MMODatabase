@@ -1,0 +1,47 @@
+@model MMOngo.ViewModels.MissionFormViewModel
+
+@{
+    ViewData["Title"] = "Edit Mission";
+}
+
+<div class="form-shell">
+    <h1>Edit Mission</h1>
+
+    <form asp-action="Edit" method="post" class="entity-form">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input asp-for="OriginalMissionName" type="hidden" />
+
+        <div class="mb-3">
+            <label asp-for="MissionName" class="form-label"></label>
+            <input asp-for="MissionName" class="form-control" />
+            <span asp-validation-for="MissionName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="MissionType" class="form-label"></label>
+            <input asp-for="MissionType" class="form-control" />
+            <span asp-validation-for="MissionType" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="QuestGiver" class="form-label"></label>
+            <select asp-for="QuestGiver" asp-items="Model.QuestGiverOptions" class="form-select">
+                <option value="">Select a quest giver</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Reward" class="form-label"></label>
+            <input asp-for="Reward" class="form-control" />
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

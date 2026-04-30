@@ -1,0 +1,23 @@
+@model Mission
+
+@{
+    ViewData["Title"] = "Delete Mission";
+}
+
+<div class="form-shell">
+    <h1>Delete Mission</h1>
+    <p class="warning-text">This removes the mission from characters and NPC quest lists.</p>
+
+    <div class="card-panel">
+        <p><strong>Mission Name:</strong> @Model.MissionName</p>
+        <p><strong>Mission Type:</strong> @Model.MissionType</p>
+        <p><strong>Quest Giver:</strong> @Model.QuestGiver</p>
+        <p><strong>Reward:</strong> @Model.Reward</p>
+    </div>
+
+    <form asp-action="Delete" method="post" class="form-actions mt-3">
+        <input type="hidden" name="name" value="@Model.MissionName" />
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </form>
+</div>

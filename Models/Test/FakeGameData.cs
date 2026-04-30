@@ -1,4 +1,4 @@
-namespace MMOngo.Models
+namespace MMOngo.Models.Test
 {
     public static class FakeGameData
     {

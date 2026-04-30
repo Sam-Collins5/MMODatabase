@@ -1,0 +1,72 @@
+@model MMOngo.ViewModels.NpcFormViewModel
+
+@{
+    ViewData["Title"] = "Create NPC";
+}
+
+<div class="form-shell form-shell-wide">
+    <h1>Create NPC</h1>
+
+    <form asp-action="Create" method="post" class="entity-form">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-grid">
+            <div class="mb-3">
+                <label asp-for="NpcName" class="form-label"></label>
+                <input asp-for="NpcName" class="form-control" />
+                <span asp-validation-for="NpcName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="XP" class="form-label"></label>
+                <input asp-for="XP" class="form-control" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="LocationsText" class="form-label"></label>
+            <input asp-for="LocationsText" class="form-control" placeholder="Comma separated" />
+        </div>
+
+        <div class="form-grid">
+            <div class="mb-3">
+                <label asp-for="SelectedWaresSold" class="form-label"></label>
+                <select asp-for="SelectedWaresSold" asp-items="Model.WareOptions" class="form-select" multiple></select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SelectedQuests" class="form-label"></label>
+                <select asp-for="SelectedQuests" asp-items="Model.QuestOptions" class="form-select" multiple></select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SelectedWeapons" class="form-label"></label>
+                <select asp-for="SelectedWeapons" asp-items="Model.WeaponOptions" class="form-select" multiple></select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SelectedArmor" class="form-label"></label>
+                <select asp-for="SelectedArmor" asp-items="Model.ArmorOptions" class="form-select" multiple></select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SelectedTools" class="form-label"></label>
+                <select asp-for="SelectedTools" asp-items="Model.ToolOptions" class="form-select" multiple></select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SelectedKnownSpells" class="form-label"></label>
+                <select asp-for="SelectedKnownSpells" asp-items="Model.SpellOptions" class="form-select" multiple></select>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">Create</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

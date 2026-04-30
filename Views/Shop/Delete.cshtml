@@ -1,0 +1,64 @@
+@model object
+
+@{
+    var category = (ViewBag.Category as string ?? string.Empty).ToLowerInvariant();
+    ViewData["Title"] = "Delete Shop Item";
+}
+
+<div class="form-shell">
+    <h1>Delete Shop Item</h1>
+    <p class="warning-text">This removes the item from character loadouts, NPC inventories, and related pseudo transactions.</p>
+
+    <div class="card-panel">
+        @if (category == "weapon")
+        {
+            var weapon = (Weapon)Model;
+            <p><strong>Category:</strong> Weapon</p>
+            <p><strong>Name:</strong> @weapon.WeaponName</p>
+            <p><strong>Price:</strong> @weapon.Price</p>
+        }
+        else if (category == "armor")
+        {
+            var armor = (Armor)Model;
+            <p><strong>Category:</strong> Armor</p>
+            <p><strong>Name:</strong> @armor.ArmorName</p>
+            <p><strong>Price:</strong> @armor.Price</p>
+        }
+        else if (category == "tool")
+        {
+            var tool = (ToolItem)Model;
+            <p><strong>Category:</strong> Tool</p>
+            <p><strong>Name:</strong> @tool.ToolName</p>
+            <p><strong>Price:</strong> @tool.Price</p>
+        }
+        else if (category == "spell")
+        {
+            var spell = (Spell)Model;
+            <p><strong>Category:</strong> Spell</p>
+            <p><strong>Name:</strong> @spell.SpellName</p>
+            <p><strong>Gold Cost:</strong> @spell.GoldCost</p>
+        }
+    </div>
+
+    <form asp-action="Delete" method="post" class="form-actions mt-3">
+        <input type="hidden" name="category" value="@category" />
+        @if (category == "weapon")
+        {
+            <input type="hidden" name="id" value="@((Weapon)Model).WeaponId" />
+        }
+        else if (category == "armor")
+        {
+            <input type="hidden" name="id" value="@((Armor)Model).ArmorId" />
+        }
+        else if (category == "tool")
+        {
+            <input type="hidden" name="id" value="@((ToolItem)Model).ToolId" />
+        }
+        else if (category == "spell")
+        {
+            <input type="hidden" name="id" value="@((Spell)Model).SpellId" />
+        }
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </form>
+</div>

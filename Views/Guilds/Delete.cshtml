@@ -1,0 +1,22 @@
+@model Guild
+
+@{
+    ViewData["Title"] = "Delete Guild";
+}
+
+<div class="form-shell">
+    <h1>Delete Guild</h1>
+    <p class="warning-text">This removes the guild and clears that membership from linked characters.</p>
+
+    <div class="card-panel">
+        <p><strong>Guild Name:</strong> @Model.GuildName</p>
+        <p><strong>Creator:</strong> @Model.Creator</p>
+        <p><strong>Members:</strong> @Model.MemberCount</p>
+    </div>
+
+    <form asp-action="Delete" method="post" class="form-actions mt-3">
+        <input type="hidden" name="name" value="@Model.GuildName" />
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </form>
+</div>

@@ -4,37 +4,47 @@
     ViewData["Title"] = "Missions";
 }
 
-<h1>Missions</h1>
+<div class="page-header">
+    <div>
+        <h1>Missions</h1>
+        <p class="page-subtitle">Manage mission records and quest givers.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-success">Create Mission</a>
+</div>
 
 @if (Model.Any())
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Mission Name</th>
-                <th>Mission Type</th>
-                <th>Quest Giver</th>
-                <th>Reward</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var mission in Model)
-            {
+    <div class="card-panel">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@mission.MissionName</td>
-                    <td>@mission.MissionType</td>
-                    <td>@mission.QuestGiver</td>
-                    <td>@mission.Reward</td>
-                    <td>
-                        <a asp-action="Details" asp-route-name="@mission.MissionName">View Details</a>
-                    </td>
+                    <th>Mission Name</th>
+                    <th>Mission Type</th>
+                    <th>Quest Giver</th>
+                    <th>Reward</th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var mission in Model)
+                {
+                    <tr>
+                        <td>@mission.MissionName</td>
+                        <td>@mission.MissionType</td>
+                        <td>@mission.QuestGiver</td>
+                        <td>@mission.Reward</td>
+                        <td class="table-actions">
+                            <a asp-action="Details" asp-route-name="@mission.MissionName">Details</a>
+                            <a asp-action="Edit" asp-route-name="@mission.MissionName">Edit</a>
+                            <a asp-action="Delete" asp-route-name="@mission.MissionName">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 else
 {
-    <p>No missions found.</p>
+    <div class="empty-state">No missions found.</div>
 }

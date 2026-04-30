@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MMOngo.Models;
+using MMOngo.Models.Test;
 using MMOngo.Services.Interfaces;
 using MMOngo.Services;
 using MMOngo.ViewModels;
