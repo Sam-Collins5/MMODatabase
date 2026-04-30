@@ -107,9 +107,6 @@ namespace MMOngo.Services
             List<string> oldMembers = new List<string>(guild.Members);
             string newName = form.GuildName.Trim();
 
-            Console.WriteLine(guild.GuildName);
-            Console.WriteLine(form.GuildName);
-
             var coll = MongoConnection.Database.GetCollection<Guild>("Guilds");
             var filter = Builders<Guild>.Filter.Eq("GuildName", form.OriginalGuildName);
             var combinedUpdate = Builders<Guild>.Update.Combine(
