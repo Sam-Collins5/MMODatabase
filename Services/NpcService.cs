@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using MMOngo.Models;
 using MMOngo.Models.Test;
 using MMOngo.Services.Interfaces;
+using MongoDB.Driver;
 using MMOngo.ViewModels;
 
 namespace MMOngo.Services
@@ -10,11 +11,19 @@ namespace MMOngo.Services
     {
         public List<Npc> GetAllNpcs()
         {
-            return FakeGameData.Npcs;
+            var npcColl = MongoConnection.Database.GetCollection<Npc>("NPCs");
+            var npcFilter = Builders<Npc>.Filter.Empty;
+
+            return npcColl.Find(npcFilter).ToList();
         }
 
         public Npc? GetNpcByName(string name)
         {
+            var npcColl = MongoConnection.Database.GetCollection<Npc>("NPCs");
+            var npcFilter = Builders<Npc>.Filter.Empty;
+
+            return npcColl.Find(npcFilter).ToList()
+                .FirstOrDefault(n => n.NpcName == name);
             return FakeGameData.Npcs.FirstOrDefault(n => n.NpcName == name);
         }
 

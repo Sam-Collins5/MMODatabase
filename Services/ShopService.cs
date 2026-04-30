@@ -2,6 +2,7 @@ using MMOngo.Models;
 using MMOngo.Models.Test;
 using MMOngo.Services.Interfaces;
 using MMOngo.ViewModels;
+using MongoDB.Driver;
 
 namespace MMOngo.Services
 {
@@ -9,12 +10,25 @@ namespace MMOngo.Services
     {
         public ShopViewModel GetShopData()
         {
+            var weaponColl = MongoConnection.Database.GetCollection<Weapon>("Weapons");
+            var weaponFilter = Builders<Weapon>.Filter.Empty;
+
+            var armorColl = MongoConnection.Database.GetCollection<Armor>("Armors");
+            var armorFilter = Builders<Armor>.Filter.Empty;
+
+            var toolColl = MongoConnection.Database.GetCollection<ToolItem>("Tools");
+            var toolFilter = Builders<ToolItem>.Filter.Empty;
+
+            var spellColl = MongoConnection.Database.GetCollection<Spell>("Spells");
+            var spellFilter = Builders<Spell>.Filter.Empty;
+
             return new ShopViewModel
             {
-                Weapons = FakeGameData.Weapons,
-                Armors = FakeGameData.Armors,
-                Tools = FakeGameData.Tools,
-                Spells = FakeGameData.Spells
+                Weapons = weaponColl.Find(weaponFilter).ToList(),
+                Armors = armorColl.Find(armorFilter).ToList(),
+                Tools = toolColl.Find(toolFilter).ToList(),
+                Spells = spellColl.Find(spellFilter).ToList(),
+
             };
         }
 
