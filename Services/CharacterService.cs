@@ -201,8 +201,6 @@ namespace MMOngo.Services
                 return;
             }
 
-            FakeGameData.Characters.Remove(character);
-
             var coll = MongoConnection.Database.GetCollection<PlayerCharacter>("PlayerCharacters");
             var filter = Builders<PlayerCharacter>.Filter.Eq("CharacterId", id);
             coll.DeleteOne(filter);
