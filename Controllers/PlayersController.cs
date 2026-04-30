@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MMOngo.Services.Interfaces;
+using MMOngo.Models;
 
 namespace MMOngo.Controllers
 {
