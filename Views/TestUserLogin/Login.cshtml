@@ -1,0 +1,48 @@
+﻿@model MMOngo.ViewModels.Auth.LoginInputModel
+
+@{
+    ViewData["Title"] = "Test Login";
+}
+
+<h1>Test Login</h1>
+
+<p>This page tests login without using the real MongoDB user collection.</p>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-5">
+        <form asp-controller="TestUserLogin" asp-action="Login" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="UsernameOrEmail" class="form-label"></label>
+                <input asp-for="UsernameOrEmail" class="form-control" />
+                <span asp-validation-for="UsernameOrEmail" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-check mb-3">
+                <input asp-for="RememberMe" class="form-check-input" />
+                <label asp-for="RememberMe" class="form-check-label"></label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Login</button>
+
+            <a asp-controller="TestUserLogin" asp-action="Register" class="btn btn-link">
+                Create test account
+            </a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
