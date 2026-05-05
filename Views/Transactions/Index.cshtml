@@ -1,0 +1,125 @@
+@model MMOngo.ViewModels.TransactionsIndexViewModel
+@{
+    ViewData["Title"] = "Transaction Log";
+}
+
+<div class="dashboard-hero">
+    <h1>Transaction Log</h1>
+    <p>Every shop transaction in MMOngo. Filter by player, item type, or price range.</p>
+</div>
+
+<div class="dashboard-card">
+    <form method="get" asp-action="Index" class="filter-form">
+        <div class="filter-row">
+            <label>
+                Player Name
+                <input type="text" name="userName" value="@Model.FilterUserName" placeholder="Search by username..." />
+            </label>
+
+            <label>
+                Item Type
+                <select name="itemType">
+                    <option value="All"     selected="@(Model.FilterItemType == "All")">All</option>
+                    <option value="Weapon"  selected="@(Model.FilterItemType == "Weapon")">Weapon</option>
+                    <option value="Armor"   selected="@(Model.FilterItemType == "Armor")">Armor</option>
+                    <option value="Tool"    selected="@(Model.FilterItemType == "Tool")">Tool</option>
+                    <option value="Spell"   selected="@(Model.FilterItemType == "Spell")">Spell</option>
+                </select>
+            </label>
+
+            <label>
+                Min Total
+                <input type="number" name="minTotal" value="@Model.FilterMinTotal" placeholder="0" />
+            </label>
+
+            <label>
+                Max Total
+                <input type="number" name="maxTotal" value="@Model.FilterMaxTotal" placeholder="9999" />
+            </label>
+
+            <label>
+                Sort By
+                <select name="sortBy">
+                    <option value="Newest"      selected="@(Model.SortBy == "Newest")">Newest</option>
+                    <option value="DateAsc"     selected="@(Model.SortBy == "DateAsc")">Oldest</option>
+                    <option value="TotalDesc"   selected="@(Model.SortBy == "TotalDesc")">Total (high to low)</option>
+                    <option value="TotalAsc"    selected="@(Model.SortBy == "TotalAsc")">Total (low to high)</option>
+                    <option value="PlayerAsc"   selected="@(Model.SortBy == "PlayerAsc")">User A&ndash;Z</option>
+                    <option value="PlayerDesc"  selected="@(Model.SortBy == "PlayerDesc")">User Z&ndash;A</option>
+                </select>
+            </label>
+        </div>
+
+        <div class="filter-actions">
+            <button type="submit">Apply Filters</button>
+            <a asp-action="Index">Reset</a>
+        </div>
+    </form>
+</div>
+
+<div class="dashboard-card">
+    <div class="summary-row">
+        <span><strong>@Model.TotalCount</strong> transactions found</span>
+        <span><strong>@Model.GrandTotal</strong> gold total</span>
+    </div>
+
+    @if (Model.Transactions.Any())
+    {
+        <table class="transaction-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>User</th>
+                    <th>Item Type</th>
+                    <th>Item</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tx in Model.Transactions)
+                {
+                    <tr>
+                        <td>@tx.TransactionId</td>
+                        <td>@tx.TransactionDate</td>
+                        <td>@tx.UserName</td>
+                        <td><span class="item-type-tag item-type-@tx.ItemType.ToLower()">@tx.ItemType</span></td>
+                        <td>@tx.ItemName</td>
+                        <td class="total-cell">@tx.Total g</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="empty-text">No transactions match those filters.</p>
+    }
+</div>
+
+<style>
+    .filter-form { display: flex; flex-direction: column; gap: 12px; }
+    .filter-row { display: flex; gap: 16px; flex-wrap: wrap; }
+    .filter-row label { display: flex; flex-direction: column; font-size: 0.85rem; color: #aaa; gap: 4px; }
+    .filter-row input, .filter-row select {
+        padding: 6px 10px; background: #1e1e2a; color: #fff;
+        border: 1px solid #444; border-radius: 4px; font-size: 0.95rem;
+    }
+    .filter-actions { display: flex; gap: 12px; align-items: center; }
+    .filter-actions button {
+        background: #4a90e2; color: white; border: none; padding: 8px 16px;
+        border-radius: 4px; cursor: pointer; font-weight: 600;
+    }
+    .filter-actions a { color: #aaa; text-decoration: underline; }
+    .summary-row { display: flex; gap: 32px; padding-bottom: 12px; border-bottom: 1px solid #333; margin-bottom: 12px; }
+    .transaction-table { width: 100%; border-collapse: collapse; }
+    .transaction-table th, .transaction-table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #2a2a35; }
+    .transaction-table th { background: #1a1a25; color: #ccc; font-weight: 600; }
+    .transaction-table tbody tr:hover { background: #1e1e2a; }
+    .total-cell { text-align: right; font-weight: 600; color: #ffd866; }
+    .item-type-tag { padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
+    .item-type-weapon { background: #8b2e2e; color: #fff; }
+    .item-type-armor  { background: #2e5b8b; color: #fff; }
+    .item-type-tool   { background: #5a8b2e; color: #fff; }
+    .item-type-spell  { background: #6b3a8b; color: #fff; }
+</style>

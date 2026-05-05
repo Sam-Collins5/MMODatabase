@@ -22,6 +22,8 @@ builder.Services.AddScoped<IMissionService, MissionService>();
 builder.Services.AddScoped<INpcService, NpcService>();
 builder.Services.AddScoped<IShopService, ShopService>();
 builder.Services.AddScoped<IHomeService, HomeService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 var app = builder.Build();
 
@@ -81,6 +83,7 @@ static class MongoConnection
         await Database.CreateCollectionAsync("Armors");
         await Database.CreateCollectionAsync("Tools");
         await Database.CreateCollectionAsync("Spells");
+        await Database.CreateCollectionAsync("Transactions");
     }
 
     public static MongoClient GlobalMongoClient;
