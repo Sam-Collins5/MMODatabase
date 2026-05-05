@@ -1,19 +1,28 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using MMOngo.Models;
 using MMOngo.Services;
 using MMOngo.Services.Interfaces;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
-using System;
-using System.Threading.Tasks;
-
-MongoConnection.Init();
 
 var builder = WebApplication.CreateBuilder(args);
 
+await MongoConnection.Init(builder.Configuration);
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/UserLogin/Login";
+        options.LogoutPath = "/UserLogin/Logout";
+        options.AccessDeniedPath = "/UserLogin/Login";
+    });
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<ICharacterService, CharacterService>();
@@ -22,6 +31,9 @@ builder.Services.AddScoped<IMissionService, MissionService>();
 builder.Services.AddScoped<INpcService, NpcService>();
 builder.Services.AddScoped<IShopService, ShopService>();
 builder.Services.AddScoped<IHomeService, HomeService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 var app = builder.Build();
 
@@ -29,13 +41,13 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -45,44 +57,54 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-
 app.Run();
 
-static class MongoConnection
+public static class MongoConnection
 {
-    public static async Task Init()
+    public static MongoClient GlobalMongoClient { get; private set; } = null!;
+
+    public static IMongoDatabase Database { get; private set; } = null!;
+
+    public static async Task Init(IConfiguration configuration)
     {
-        // Connect to database
-        StreamReader sr = new StreamReader("mongo_connection_string.txt");
-        string connectionString = sr.ReadLine();
-        sr.Close();
+        string? connectionString = configuration.GetConnectionString("DefaultConnection");  // just replace the default connection string key with the one you have in a hidden file
+        string? databaseName = configuration["DatabaseSettings:DatabaseName"];  // now replace the database name key with the one you have in a hidden file
 
-        GlobalMongoClient = new MongoClient(connectionString);
-
-        var cursor = GlobalMongoClient.ListDatabaseNames();
-        int i = 0;
-        await foreach (var db in cursor.ToAsyncEnumerable())
+        if (string.IsNullOrWhiteSpace(connectionString))
         {
-            if (i == 0)
-            {
-                Database = GlobalMongoClient.GetDatabase(db);
-                i++;
-            }
+            throw new Exception("MongoDB connection string is missing from appsettings.json.");
         }
 
-        await Database.CreateCollectionAsync("Players");
-        await Database.CreateCollectionAsync("PlayerCharacters");
-        await Database.CreateCollectionAsync("Guilds");
-        await Database.CreateCollectionAsync("Missions");
-        await Database.CreateCollectionAsync("NPCs");
-        await Database.CreateCollectionAsync("Shops");
-        await Database.CreateCollectionAsync("Home");
-        await Database.CreateCollectionAsync("Weapons");
-        await Database.CreateCollectionAsync("Armors");
-        await Database.CreateCollectionAsync("Tools");
-        await Database.CreateCollectionAsync("Spells");
+        if (string.IsNullOrWhiteSpace(databaseName))
+        {
+            throw new Exception("MongoDB database name is missing from appsettings.json.");
+        }
+
+        GlobalMongoClient = new MongoClient(connectionString);
+        Database = GlobalMongoClient.GetDatabase(databaseName);
+
+        await CreateCollectionIfMissingAsync("Players");
+        await CreateCollectionIfMissingAsync("PlayerCharacters");
+        await CreateCollectionIfMissingAsync("Guilds");
+        await CreateCollectionIfMissingAsync("Missions");
+        await CreateCollectionIfMissingAsync("NPCs");
+        await CreateCollectionIfMissingAsync("Shops");
+        await CreateCollectionIfMissingAsync("Home");
+        await CreateCollectionIfMissingAsync("Weapons");
+        await CreateCollectionIfMissingAsync("Armors");
+        await CreateCollectionIfMissingAsync("Tools");
+        await CreateCollectionIfMissingAsync("Spells");
+        await CreateCollectionIfMissingAsync("Users");
     }
 
-    public static MongoClient GlobalMongoClient;
-    public static IMongoDatabase Database;
+    private static async Task CreateCollectionIfMissingAsync(string collectionName)
+    {
+        using IAsyncCursor<string> cursor = await Database.ListCollectionNamesAsync();
+        List<string> collectionNames = await cursor.ToListAsync();
+
+        if (!collectionNames.Contains(collectionName))
+        {
+            await Database.CreateCollectionAsync(collectionName);
+        }
+    }
 }
