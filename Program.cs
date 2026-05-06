@@ -72,12 +72,26 @@ public static class MongoConnection
 
         if (string.IsNullOrWhiteSpace(connectionString))
         {
-            throw new Exception("MongoDB connection string is missing from appsettings.json.");
+            // Check for mongo connection string in other file
+            StreamReader sr = new StreamReader("mongo_connection_string.txt");
+            connectionString = sr.ReadLine();
+            sr.Close();
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new Exception("MongoDB connection string is missing from appsettings.json.");
         }
 
         if (string.IsNullOrWhiteSpace(databaseName))
         {
-            throw new Exception("MongoDB database name is missing from appsettings.json.");
+            // Check for mongo database name string in other file
+            StreamReader sr = new StreamReader("mongo_connection_string.txt");
+            // Get second line of file
+            sr.ReadLine();
+            databaseName = sr.ReadLine();
+            sr.Close();
+
+            if (string.IsNullOrWhiteSpace(databaseName))
+                throw new Exception("MongoDB database name is missing from appsettings.json.");
         }
 
         GlobalMongoClient = new MongoClient(connectionString);
