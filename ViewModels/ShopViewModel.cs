@@ -8,5 +8,7 @@ namespace MMOngo.ViewModels
         public List<Armor> Armors { get; set; } = new List<Armor>();
         public List<ToolItem> Tools { get; set; } = new List<ToolItem>();
         public List<Spell> Spells { get; set; } = new List<Spell>();
+
+        public string? WeaponNameSearch { get; set; } = "";
     }
 }

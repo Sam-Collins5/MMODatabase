@@ -13,9 +13,9 @@ namespace MMOngo.Controllers
             _shopService = shopService;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string? weaponName, string? armorName, string? spellName, string? toolName)
         {
-            return View(_shopService.GetShopData());
+            return View(_shopService.GetShopData(weaponName, armorName, spellName, toolName));
         }
 
         public IActionResult Create(string category)

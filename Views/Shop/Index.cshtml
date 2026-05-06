@@ -19,6 +19,12 @@
 </div>
 
 <h2>Weapons</h2>
+<form asp-controller="Shop" asp-action="Index">
+    <p>
+        <input type="text" name="weaponName" placeholder="Search by weapon name..."/>
+        <input type="submit" value="Search"/>
+    </p>
+</form>
 @if (Model.Weapons.Any())
 {
     <div class="card-panel mb-4">
@@ -35,6 +41,14 @@
             <tbody>
                 @foreach (var weapon in Model.Weapons)
                 {
+                    if (!string.IsNullOrEmpty(Model.WeaponNameSearch))
+                    {
+                        Console.WriteLine(Model.WeaponNameSearch);
+                        if (weapon.WeaponName != Model.WeaponNameSearch)
+                        {
+                            continue;
+                        }
+                    }
                     <tr>
                         <td>@weapon.WeaponName</td>
                         <td>@weapon.Damage</td>
@@ -56,6 +70,12 @@ else
 }
 
 <h2>Armor</h2>
+<form asp-controller="Shop" asp-action="Index">
+    <p>
+        <input type="text" name="armorName" placeholder="Search by armor name..." />
+        <input type="submit" value="Search" />
+    </p>
+</form>
 @if (Model.Armors.Any())
 {
     <div class="card-panel mb-4">
@@ -93,6 +113,12 @@ else
 }
 
 <h2>Tools</h2>
+<form asp-controller="Shop" asp-action="Index">
+    <p>
+        <input type="text" name="toolName" placeholder="Search by tool name..." />
+        <input type="submit" value="Search" />
+    </p>
+</form>
 @if (Model.Tools.Any())
 {
     <div class="card-panel mb-4">
@@ -128,6 +154,12 @@ else
 }
 
 <h2>Spells</h2>
+<form asp-controller="Shop" asp-action="Index">
+    <p>
+        <input type="text" name="spellName" placeholder="Search by spell name..." />
+        <input type="submit" value="Search" />
+    </p>
+</form>
 @if (Model.Spells.Any())
 {
     <div class="card-panel">

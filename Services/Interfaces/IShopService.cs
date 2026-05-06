@@ -4,7 +4,7 @@ namespace MMOngo.Services.Interfaces
 {
     public interface IShopService
     {
-        ShopViewModel GetShopData();
+        ShopViewModel GetShopData(string? weaponName, string? armorName, string? spellName, string? toolName);
 
         ShopItemFormViewModel GetItemCreateForm(string category);
         ShopItemFormViewModel? GetItemEditForm(string category, int id);

@@ -8,19 +8,39 @@ namespace MMOngo.Services
 {
     public class ShopService : IShopService
     {
-        public ShopViewModel GetShopData()
+        public ShopViewModel GetShopData(string? weaponName, string? armorName, string? spellName, string? toolName)
         {
             var weaponColl = MongoConnection.Database.GetCollection<Weapon>("Weapons");
             var weaponFilter = Builders<Weapon>.Filter.Empty;
+            if (!string.IsNullOrWhiteSpace(weaponName))
+            {
+                weaponFilter = Builders<Weapon>.Filter.Regex(w => w.WeaponName,
+                    new MongoDB.Bson.BsonRegularExpression(weaponName, "i"));
+            }
 
             var armorColl = MongoConnection.Database.GetCollection<Armor>("Armors");
             var armorFilter = Builders<Armor>.Filter.Empty;
+            if (!string.IsNullOrWhiteSpace(armorName))
+            {
+                armorFilter = Builders<Armor>.Filter.Regex(a => a.ArmorName,
+                    new MongoDB.Bson.BsonRegularExpression(armorName, "i"));
+            }
 
             var toolColl = MongoConnection.Database.GetCollection<ToolItem>("Tools");
             var toolFilter = Builders<ToolItem>.Filter.Empty;
+            if (!string.IsNullOrWhiteSpace(toolName))
+            {
+                toolFilter = Builders<ToolItem>.Filter.Regex(t => t.ToolName,
+                    new MongoDB.Bson.BsonRegularExpression(toolName, "i"));
+            }
 
             var spellColl = MongoConnection.Database.GetCollection<Spell>("Spells");
             var spellFilter = Builders<Spell>.Filter.Empty;
+            if (!string.IsNullOrWhiteSpace(spellName))
+            {
+                spellFilter = Builders<Spell>.Filter.Regex(s => s.SpellName,
+                    new MongoDB.Bson.BsonRegularExpression(spellName, "i"));
+            }
 
             return new ShopViewModel
             {
