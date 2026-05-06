@@ -2,9 +2,6 @@ using MMOngo.Models;
 using MMOngo.Models.Test;
 using MMOngo.Services.Interfaces;
 using MMOngo.ViewModels;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 namespace MMOngo.Services
@@ -13,22 +10,37 @@ namespace MMOngo.Services
     {
         public List<Player> GetAllPlayers()
         {
+            if (MongoConnection.Database == null)
+            {
+                return new List<Player>();
+            }
+
             var coll = MongoConnection.Database.GetCollection<Player>("Players");
-            
+
             var filter = Builders<Player>.Filter.Empty;
             return coll.Find(filter).ToList();
         }
 
         public Player? GetPlayerByUserName(string username)
         {
+            if (MongoConnection.Database == null)
+            {
+                return null;
+            }
+
             var coll = MongoConnection.Database.GetCollection<Player>("Players");
 
-            var filter = Builders<Player>.Filter.Empty;
-            return coll.Find(filter).ToList().FirstOrDefault(p => p.UserName == username);
+            var filter = Builders<Player>.Filter.Eq(player => player.UserName, username);
+            return coll.Find(filter).FirstOrDefault();
         }
 
         public PlayerDetailsViewModel? GetPlayerDetails(string username)
         {
+            if (MongoConnection.Database == null)
+            {
+                return null;
+            }
+
             Player? player = GetPlayerByUserName(username);
 
             if (player == null)
@@ -37,32 +49,40 @@ namespace MMOngo.Services
             }
 
             var characterColl = MongoConnection.Database.GetCollection<PlayerCharacter>("PlayerCharacters");
-            var characterfilter = Builders<PlayerCharacter>.Filter.Empty;
-
             var transactionColl = MongoConnection.Database.GetCollection<Transaction>("Transactions");
-            var transactionfilter = Builders<Transaction>.Filter.Empty;
+
+            var characterFilter = Builders<PlayerCharacter>.Filter.Eq(character => character.UserName, player.UserName);
+            var transactionFilter = Builders<Transaction>.Filter.Eq(transaction => transaction.UserName, player.UserName);
 
             return new PlayerDetailsViewModel
             {
                 Player = player,
-                CharacterDetails = characterColl.Find(characterfilter).ToList()
-                    .Where(c => c.UserName == player.PlayerName)
-                    .ToList(),
-                Transactions = transactionColl.Find(transactionfilter).ToList()
-                    .Where(t => t.UserName == player.PlayerName)
-                    .ToList()
+                CharacterDetails = characterColl.Find(characterFilter).ToList(),
+                Transactions = transactionColl.Find(transactionFilter).ToList()
             };
         }
 
         public void AddPlayer(Player player)
         {
+            if (MongoConnection.Database == null)
+            {
+                return;
+            }
+
             var coll = MongoConnection.Database.GetCollection<Player>("Players");
+
             player.Characters ??= new List<string>();
+
             coll.InsertOne(player);
         }
 
         public void UpdatePlayer(Player player)
         {
+            if (MongoConnection.Database == null)
+            {
+                return;
+            }
+
             Player? existingPlayer = GetPlayerByUserName(player.UserName);
 
             if (existingPlayer == null)
@@ -73,39 +93,44 @@ namespace MMOngo.Services
             string oldUserName = existingPlayer.UserName;
 
             var coll = MongoConnection.Database.GetCollection<Player>("Players");
-            var filter = Builders<Player>.Filter.Eq("UserName", oldUserName);
+
+            var filter = Builders<Player>.Filter.Eq(currentPlayer => currentPlayer.UserName, oldUserName);
+
             var combinedUpdate = Builders<Player>.Update.Combine(
-                Builders<Player>.Update.Set("UserName", player.UserName),
-                Builders<Player>.Update.Set("PlayerName", player.PlayerName),
-                Builders<Player>.Update.Set("Age", player.Age),
-                Builders<Player>.Update.Set("PasswordHash", player.PasswordHash),
-                Builders<Player>.Update.Set("MemberSince", player.MemberSince),
-                Builders<Player>.Update.Set("Characters", player.Characters)
+                Builders<Player>.Update.Set(currentPlayer => currentPlayer.UserName, player.UserName),
+                Builders<Player>.Update.Set(currentPlayer => currentPlayer.PlayerName, player.PlayerName),
+                Builders<Player>.Update.Set(currentPlayer => currentPlayer.Age, player.Age),
+                Builders<Player>.Update.Set(currentPlayer => currentPlayer.PasswordHash, player.PasswordHash),
+                Builders<Player>.Update.Set(currentPlayer => currentPlayer.MemberSince, player.MemberSince),
+                Builders<Player>.Update.Set(currentPlayer => currentPlayer.Characters, player.Characters)
             );
+
             coll.UpdateOne(filter, combinedUpdate);
 
-            var characterColl = MongoConnection.Database.GetCollection<PlayerCharacter>("PlayerCharacter");
-            var characterFilter = Builders<PlayerCharacter>.Filter.Eq("UserName", oldUserName);
-            var characters = characterColl.Find(characterFilter).ToList();
-            if (characters.Count() > 0)
-            {
-                characters.First().UserName = player.UserName;
-            }
+            var characterColl = MongoConnection.Database.GetCollection<PlayerCharacter>("PlayerCharacters");
+
+            var characterFilter = Builders<PlayerCharacter>.Filter.Eq(character => character.UserName, oldUserName);
+
+            var characterUpdate = Builders<PlayerCharacter>.Update.Set(character => character.UserName, player.UserName);
+
+            characterColl.UpdateMany(characterFilter, characterUpdate);
 
             var transactionColl = MongoConnection.Database.GetCollection<Transaction>("Transactions");
-            var transactionFilter = Builders<Transaction>.Filter.Empty;
 
-            if (!string.Equals(oldUserName, player.PlayerName, StringComparison.Ordinal))
-            {
-                foreach (var transaction in transactionColl.Find(transactionFilter).ToList().Where(t => t.UserName == oldUserName))
-                {
-                    transaction.UserName = player.UserName;
-                }
-            }
+            var transactionFilter = Builders<Transaction>.Filter.Eq(transaction => transaction.UserName, oldUserName);
+
+            var transactionUpdate = Builders<Transaction>.Update.Set(transaction => transaction.UserName, player.UserName);
+
+            transactionColl.UpdateMany(transactionFilter, transactionUpdate);
         }
 
         public void DeletePlayer(string username)
         {
+            if (MongoConnection.Database == null)
+            {
+                return;
+            }
+
             Player? player = GetPlayerByUserName(username);
 
             if (player == null)
@@ -115,19 +140,19 @@ namespace MMOngo.Services
 
             {
                 var coll = MongoConnection.Database.GetCollection<PlayerCharacter>("PlayerCharacters");
-                var filter = Builders<PlayerCharacter>.Filter.Eq("UserName", player.UserName);
-                coll.DeleteOne(filter);
+                var filter = Builders<PlayerCharacter>.Filter.Eq(character => character.UserName, player.UserName);
+                coll.DeleteMany(filter);
             }
 
             {
                 var coll = MongoConnection.Database.GetCollection<Transaction>("Transactions");
-                var filter = Builders<Transaction>.Filter.Eq("UserName", player.UserName);
-                coll.DeleteOne(filter);
+                var filter = Builders<Transaction>.Filter.Eq(transaction => transaction.UserName, player.UserName);
+                coll.DeleteMany(filter);
             }
 
             {
                 var coll = MongoConnection.Database.GetCollection<Player>("Players");
-                var filter = Builders<Player>.Filter.Eq("UserName", player.UserName);
+                var filter = Builders<Player>.Filter.Eq(currentPlayer => currentPlayer.UserName, player.UserName);
                 coll.DeleteOne(filter);
             }
         }
