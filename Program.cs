@@ -31,6 +31,8 @@ builder.Services.AddScoped<IMissionService, MissionService>();
 builder.Services.AddScoped<INpcService, NpcService>();
 builder.Services.AddScoped<IShopService, ShopService>();
 builder.Services.AddScoped<IHomeService, HomeService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
@@ -109,6 +111,7 @@ public static class MongoConnection
         await CreateCollectionIfMissingAsync("Tools");
         await CreateCollectionIfMissingAsync("Spells");
         await CreateCollectionIfMissingAsync("Users");
+        await Database.CreateCollectionAsync("Transactions");
     }
 
     private static async Task CreateCollectionIfMissingAsync(string collectionName)

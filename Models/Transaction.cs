@@ -1,6 +1,6 @@
+﻿using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System.ComponentModel.DataAnnotations;
 
 namespace MMOngo.Models
 {
@@ -8,9 +8,9 @@ namespace MMOngo.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        [Required]
         public string Id { get; set; }
 
+        [Required]
         public int TransactionId { get; set; }
 
         [Required]
@@ -19,10 +19,15 @@ namespace MMOngo.Models
         [Required]
         public string ItemType { get; set; } = string.Empty;
 
+        [Required]
         public int ItemId { get; set; }
 
+        public string ItemName { get; set; } = string.Empty;
+
+        [Required]
         public int Total { get; set; }
 
+        [Required]
         public string TransactionDate { get; set; } = string.Empty;
     }
 }

@@ -1,0 +1,122 @@
+@model MMOngo.ViewModels.DashboardIndexViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="dashboard-hero">
+    <h1>MMOngo Dashboard</h1>
+    <p>Live aggregate statistics across the entire game database, computed with MongoDB aggregation pipelines.</p>
+</div>
+
+@* === SUMMARY STAT TILES === *@
+<div class="stats-grid">
+    <div class="stat-tile">
+        <div class="stat-value">@Model.TotalPlayers</div>
+        <div class="stat-label">Players</div>
+    </div>
+    <div class="stat-tile">
+        <div class="stat-value">@Model.TotalCharacters</div>
+        <div class="stat-label">Characters</div>
+    </div>
+    <div class="stat-tile">
+        <div class="stat-value">@Model.TotalGuilds</div>
+        <div class="stat-label">Guilds</div>
+    </div>
+    <div class="stat-tile">
+        <div class="stat-value">@Model.TotalTransactions</div>
+        <div class="stat-label">Transactions</div>
+    </div>
+    <div class="stat-tile">
+        <div class="stat-value">@Model.AverageCharacterLevel</div>
+        <div class="stat-label">Avg Character Level</div>
+    </div>
+    <div class="stat-tile">
+        <div class="stat-value">@Model.TotalGoldSpent.ToString("N0") g</div>
+        <div class="stat-label">Total Gold Spent</div>
+    </div>
+</div>
+
+@* === HIGHLIGHT CARDS === *@
+<div class="dashboard-grid">
+    <div class="dashboard-card highlight-card">
+        <h2>Top Guild</h2>
+        @if (!string.IsNullOrEmpty(Model.TopGuildName))
+        {
+            <div class="callout">
+                <div class="callout-name">@Model.TopGuildName</div>
+                <div class="callout-sub">@Model.TopGuildMemberCount members</div>
+            </div>
+        }
+        else
+        {
+            <p class="empty-text">No guilds yet.</p>
+        }
+    </div>
+
+    <div class="dashboard-card highlight-card">
+        <h2>Most Purchased Item</h2>
+        @if (!string.IsNullOrEmpty(Model.MostPurchasedItem))
+        {
+            <div class="callout">
+                <div class="callout-name">@Model.MostPurchasedItem</div>
+                <div class="callout-sub">@Model.MostPurchasedItemCount purchases</div>
+            </div>
+        }
+        else
+        {
+            <p class="empty-text">No transactions yet.</p>
+        }
+    </div>
+
+    <div class="dashboard-card">
+        <h2>Top 5 Spenders</h2>
+        @if (Model.TopSpenders.Any())
+        {
+            <ol class="dashboard-list">
+                @foreach (var spender in Model.TopSpenders)
+                {
+                    <li>
+                        <span>@spender.UserName</span>
+                        <span>@spender.TotalSpent.ToString("N0") g</span>
+                    </li>
+                }
+            </ol>
+        }
+        else
+        {
+            <p class="empty-text">No spenders yet.</p>
+        }
+    </div>
+</div>
+
+<style>
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 12px;
+        margin: 20px 0;
+    }
+    .stat-tile {
+        background: linear-gradient(135deg, #2a2a3a 0%, #1e1e2a 100%);
+        padding: 18px;
+        border-radius: 8px;
+        text-align: center;
+        border: 1px solid #3a3a4a;
+    }
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #ffd866;
+    }
+    .stat-label {
+        font-size: 0.8rem;
+        color: #aaa;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 4px;
+    }
+    .highlight-card { border: 1px solid #4a90e2; }
+    .callout { padding: 16px 0; }
+    .callout-name { font-size: 1.4rem; font-weight: 600; color: #fff; }
+    .callout-sub  { color: #aaa; margin-top: 4px; }
+</style>
